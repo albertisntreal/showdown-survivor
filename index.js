@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 // VAPID Configuration - Use environment variables for production
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BIZtF2mee3R8Rpr8aj4NNiuEnOXn5rDONEeXMGy61p0KZTWOh_744al-_ic_WFX4Df9CMArs9jVXk_4zDweBX4w';
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '_N5P1hlXlZfXbJ7LQIJi37inct8us-krPjBzg_0YlUQ';
-const VAPID_EMAIL = process.env.VAPID_EMAIL || 'your-email@example.com';
+const VAPID_EMAIL = process.env.VAPID_EMAIL || 'albertisntreal1180@gmail.com';
 
 webpush.setVapidDetails(
     `mailto:${VAPID_EMAIL}`,
