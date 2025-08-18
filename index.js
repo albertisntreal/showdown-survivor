@@ -8,7 +8,8 @@ const dayjs = require('dayjs');
 const { v4: uuidv4 } = require('uuid');
 const webpush = require('web-push');
 
-// Update these lines in your index.js:
+const app = express();
+const DATA_FILE = path.join(__dirname, 'data', 'store.json');
 
 // Change PORT configuration (around line 11)
 const PORT = process.env.PORT || 3000;
@@ -43,15 +44,6 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-const app = express();
-const DATA_FILE = path.join(__dirname, 'data', 'store.json');
-
-
-webpush.setVapidDetails(
-    'mailto:your-email@example.com', // Replace with your email
-    VAPID_PUBLIC_KEY,
-    VAPID_PRIVATE_KEY
-);
 
 // Import the enhanced schedule loader
 const {
