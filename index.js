@@ -46,9 +46,6 @@ app.listen(PORT, '0.0.0.0', () => {
 const app = express();
 const DATA_FILE = path.join(__dirname, 'data', 'store.json');
 
-// VAPID Configuration (replace with your actual keys from npx web-push generate-vapid-keys)
-const VAPID_PUBLIC_KEY = 'BAlf__SpOuUidJv4uziVcVQYMGy9I6-gCz6mZAm3TDc5wEXRtCnLEBME63xRkHJ8YJljoFjhk9_yOFCN1f7FFog';
-const VAPID_PRIVATE_KEY = 'CoNkTg7LbeT6areJa7FQ9vS2fp622DHHckimDaXsMFw';
 
 webpush.setVapidDetails(
     'mailto:your-email@example.com', // Replace with your email
