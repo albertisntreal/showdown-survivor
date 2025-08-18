@@ -44,7 +44,6 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'store.json');
 
 // VAPID Configuration (replace with your actual keys from npx web-push generate-vapid-keys)
