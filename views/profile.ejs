@@ -1,0 +1,44 @@
+<div class="page-header">
+  <h1>Profile</h1>
+  <div class="page-meta">
+    <span class="page-chip">Manage your account</span>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h2>Your Info</h2>
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:8px;">
+      <% if (user.avatarUrl) { %>
+        <img src="<%= user.avatarUrl %>" alt="avatar" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:1px solid rgba(148, 163, 184, 0.35);" />
+      <% } else { %>
+        <div style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center;">🏈</div>
+      <% } %>
+      <div>
+        <div><strong><%= user.displayName %></strong></div>
+        <div><small>Earnings: $<%= user.earnings || 0 %></small></div>
+      </div>
+    </div>
+    <form method="post" action="/profile">
+      <label>Display Name
+        <input name="displayName" value="<%= user.displayName || '' %>" />
+      </label>
+      <label>Avatar URL
+        <input name="avatarUrl" value="<%= user.avatarUrl || '' %>" />
+      </label>
+      <button class="btn primary" type="submit">Save</button>
+    </form>
+  </div>
+  <div>
+    <h2>Games</h2>
+    <ul class="list">
+      <% games.forEach(g => { %>
+        <li class="list-item">
+          <div>
+            <strong><a href="/games/<%= g.id %>"><%= g.name %></a></strong>
+            <div><small>Entry $<%= g.entryFee %> • Players <%= g.players.length %>/<%= g.maxPlayers %></small></div>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>

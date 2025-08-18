@@ -1,0 +1,83 @@
+<div class="page-header">
+  <h1>Admin Panel</h1>
+  <div class="page-meta">
+    <span class="page-chip">Manage weeks & rooms</span>
+  </div>
+</div>
+
+<div class="admin-nav" style="margin-bottom: 30px; text-align: center;">
+    <a href="/admin/results" class="btn primary" style="font-size: 1.1rem; padding: 12px 24px;">
+        🏈 Manage Game Results
+    </a>
+</div>
+
+<section class="grid">
+  <div class="card">
+    <h2>Set Current Week</h2>
+    <p>Computed current week: <strong><%= currentWeek %></strong></p>
+    <p>Override in effect: <strong><%= overrideWeek != null ? overrideWeek : 'none' %></strong></p>
+    <form method="post" action="/admin/week" class="inline" style="gap:8px;">
+      <label>Override Week
+        <select name="week">
+          <% weeks.forEach(w => { %>
+            <option value="<%= w %>" <%= overrideWeek == w ? 'selected' : '' %>>Week <%= w %></option>
+          <% }) %>
+        </select>
+      </label>
+      <button class="btn primary" type="submit">Apply</button>
+    </form>
+    <form method="post" action="/admin/week/clear" style="margin-top:8px;">
+      <button class="btn" type="submit">Clear Override</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Unused Lobby Games</h2>
+    <p class="small">We consider a game unused if it has at most one player and no picks.</p>
+    <form method="post" action="/admin/games/cleanup" style="margin-bottom:8px;">
+      <button class="btn" type="submit">Delete All Unused Games</button>
+    </form>
+    <ul class="list">
+      <% if (unusedGames.length === 0) { %>
+        <li class="list-item">No unused games found.</li>
+      <% } %>
+      <% unusedGames.forEach(g => { %>
+        <li class="list-item">
+          <div>
+            <strong><%= g.name %></strong>
+            <div><small>Created: <%= new Date(g.createdAt).toLocaleString() %></small></div>
+          </div>
+          <form method="post" action="/admin/games/<%= g.id %>/delete" class="inline">
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>All Games</h2>
+    <ul class="list">
+      <% if (!allGames || allGames.length === 0) { %>
+        <li class="list-item">No games found.</li>
+      <% } %>
+      <% (allGames || []).forEach(g => { %>
+        <li class="list-item">
+          <div>
+            <strong><%= g.name %></strong>
+            <div><small>
+              Players: <%= (g.players || []).length %>/<%= g.maxPlayers %> • Entry $<%= g.entryFee %> • <%= g.visibility %>
+              <br/>Created: <%= new Date(g.createdAt).toLocaleString() %>
+            </small></div>
+          </div>
+          <div class="inline">
+            <a class="btn" href="/games/<%= g.id %>">Enter</a>
+            <form method="post" action="/admin/games/<%= g.id %>/delete" onsubmit="return confirm('Delete this game? This cannot be undone.');">
+              <button class="btn" type="submit">Delete</button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</section>

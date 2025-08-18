@@ -1,0 +1,22 @@
+<header class="header">
+  <div class="brand">
+    <span class="logo">🏈</span>
+    <a href="/" class="title">Showdown Survivor</a>
+  </div>
+  <nav>
+    <% if (user) { %>
+      <a href="/lobby">Lobby</a>
+      <a href="/picks">Pick Team</a>
+      <a href="/game">Game</a>
+      <a href="/profile">Profile</a>
+      <% if (user.isAdmin) { %>
+        <a href="/admin">Admin</a>
+      <% } %>
+      <form action="/logout" method="post" style="display:inline">
+        <button class="linklike" type="submit">Logout (<%= user.displayName || user.email %>)</button>
+      </form>
+    <% } else { %>
+      <a href="/login">Login</a>
+    <% } %>
+  </nav>
+</header>

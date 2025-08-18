@@ -1,0 +1,608 @@
+<div class="hero-section">
+    <div class="hero-background">
+        <div class="gradient-overlay"></div>
+        <div class="field-lines"></div>
+    </div>
+
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="badge">
+                <span class="badge-text">🏆 #1 NFL Survivor Pool Platform</span>
+            </div>
+
+            <h1 class="hero-title">
+                <span class="main-title">SHOWDOWN</span>
+                <span class="sub-title">Premium NFL Survivor Pools</span>
+            </h1>
+
+            <p class="hero-description">
+                Join the most sophisticated NFL survivor pool experience. Advanced analytics,
+                real-time tracking, and professional-grade pool management for serious fans.
+            </p>
+
+            <div class="value-props">
+                <div class="prop">
+                    <span class="prop-icon">⚡</span>
+                    <span>Instant Setup</span>
+                </div>
+                <div class="prop">
+                    <span class="prop-icon">📊</span>
+                    <span>Live Analytics</span>
+                </div>
+                <div class="prop">
+                    <span class="prop-icon">🔒</span>
+                    <span>Secure Pools</span>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <a href="/login" class="btn btn-primary">
+                    <span>Start Your Pool</span>
+                    <span class="btn-arrow">→</span>
+                </a>
+                <a href="/rules" class="btn btn-ghost">
+                    <span>How It Works</span>
+                </a>
+            </div>
+
+            <div class="trust-indicators">
+                <span class="trust-item">✓ Free to Start</span>
+                <span class="trust-item">✓ No Hidden Fees</span>
+                <span class="trust-item">✓ Instant Payouts</span>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="dashboard-preview">
+                <div class="preview-header">
+                    <div class="preview-title">Week 12 • 4 Players Remaining</div>
+                    <div class="preview-pot">Prize Pool: $2,400</div>
+                </div>
+
+                <div class="preview-games">
+                    <div class="game-row">
+                        <div class="team-matchup">
+                            <span class="team away">KC</span>
+                            <span class="vs">@</span>
+                            <span class="team home selected">LV</span>
+                        </div>
+                        <div class="pick-status">
+                            <span class="pick-count">3 picks</span>
+                        </div>
+                    </div>
+
+                    <div class="game-row">
+                        <div class="team-matchup">
+                            <span class="team away">BUF</span>
+                            <span class="vs">@</span>
+                            <span class="team home">MIA</span>
+                        </div>
+                        <div class="pick-status">
+                            <span class="pick-count">1 pick</span>
+                        </div>
+                    </div>
+
+                    <div class="game-row">
+                        <div class="team-matchup">
+                            <span class="team away">SF</span>
+                            <span class="vs">vs</span>
+                            <span class="team home">SEA</span>
+                        </div>
+                        <div class="pick-status">
+                            <span class="pick-count">0 picks</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-footer">
+                    <div class="status-indicator">
+                        <span class="status-dot live"></span>
+                        <span>Live Tracking</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Weeks</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-number">$50K+</div>
+                    <div class="stat-label">Total Prizes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,200+</div>
+                    <div class="stat-label">Active Players</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Force hide any navigation on landing page */
+    nav, .nav, .navbar, .navigation, .header-nav, .main-nav {
+        display: none !important;
+    }
+
+    /* Reset any body margins/padding from layout */
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #1a1a1a;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        background: #0f172a;
+    }
+
+    /* Hero Section - Cool Blue Theme */
+    .hero-section {
+        height: 100vh;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+    }
+
+    .hero-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+    }
+
+    .gradient-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 192, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(96, 165, 250, 0.08) 0%, transparent 50%);
+    }
+
+    .field-lines {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        background-size: 100px 100px;
+        animation: drift 30s linear infinite;
+    }
+
+    @keyframes drift {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(100px, 100px); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 40px;
+        box-sizing: border-box;
+    }
+
+    .badge {
+        display: inline-block;
+        margin-bottom: 24px;
+        padding: 8px 20px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.15));
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 50px;
+        backdrop-filter: blur(10px);
+    }
+
+    .badge-text {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #60a5fa;
+    }
+
+    .hero-title {
+        margin-bottom: 24px;
+    }
+
+    .main-title {
+        display: block;
+        font-size: 4.5rem;
+        font-weight: 900;
+        letter-spacing: -3px;
+        background: linear-gradient(135deg, #ffffff 0%, #60a5fa 30%, #3b82f6 70%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+        text-shadow: 0 0 40px rgba(96, 165, 250, 0.3);
+    }
+
+    .sub-title {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: #cbd5e1;
+        letter-spacing: 0.5px;
+    }
+
+    .hero-description {
+        font-size: 1.25rem;
+        line-height: 1.7;
+        color: #e2e8f0;
+        margin-bottom: 32px;
+        max-width: 500px;
+    }
+
+    .value-props {
+        display: flex;
+        gap: 32px;
+        margin-bottom: 40px;
+    }
+
+    .prop {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+
+    .prop-icon {
+        font-size: 1.2rem;
+    }
+
+    .cta-section {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        border: none;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    }
+
+    .btn-primary:hover .btn-arrow {
+        transform: translateX(4px);
+    }
+
+    .btn-ghost {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+
+    .btn-arrow {
+        transition: transform 0.3s ease;
+    }
+
+    .trust-indicators {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .trust-item {
+        font-size: 0.875rem;
+        color: #cbd5e1;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .dashboard-preview {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 20px;
+        padding: 24px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.3);
+    }
+
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .preview-title {
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+
+    .preview-pot {
+        font-weight: 700;
+        color: #60a5fa;
+        font-size: 1.1rem;
+    }
+
+    .preview-games {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .game-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .team-matchup {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .team {
+        font-weight: 700;
+        padding: 6px 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        font-size: 0.875rem;
+        min-width: 45px;
+        text-align: center;
+        color: #f1f5f9;
+        border: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    .team.selected {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        border-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+    }
+
+    .vs {
+        color: #cbd5e1;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .pick-status {
+        font-size: 0.875rem;
+        color: #cbd5e1;
+    }
+
+    .preview-footer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(148, 163, 184, 0.15);
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.875rem;
+        color: #cbd5e1;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #60a5fa;
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 16px;
+        padding: 20px 16px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(59, 130, 246, 0.3);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+
+    .stat-card.highlight {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(96, 165, 250, 0.12));
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }
+
+    .stat-card.highlight .stat-number {
+        color: #60a5fa;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #cbd5e1;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            padding: 0 30px;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 3rem;
+        }
+
+        .value-props {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-content {
+            padding: 0 20px;
+            gap: 30px;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+        }
+
+        .sub-title {
+            font-size: 1.1rem;
+        }
+
+        .hero-description {
+            font-size: 1rem;
+            max-width: 100%;
+        }
+
+        .value-props {
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .cta-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 280px;
+            justify-content: center;
+        }
+
+        .trust-indicators {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stats-cards {
+            grid-template-columns: 1fr;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-preview {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-content {
+            padding: 0 15px;
+        }
+
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .dashboard-preview {
+            padding: 16px;
+        }
+
+        .preview-header {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+    }
+</style>

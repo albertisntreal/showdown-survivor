@@ -1,0 +1,26 @@
+{
+  "name": "showdown",
+  "version": "1.0.0",
+  "description": "NFL Survivor Pool web app (minimal scaffold)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "setup": "node setup-data.js",
+    "test": "echo \"No tests yet\""
+  },
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dayjs": "^1.11.11",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.17.3",
+    "uuid": "^9.0.1",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

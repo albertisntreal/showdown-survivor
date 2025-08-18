@@ -1,0 +1,1407 @@
+{
+  "teams": [
+    "49ers", "Bears", "Bengals", "Bills", "Broncos", "Browns", "Buccaneers",
+    "Cardinals", "Chargers", "Chiefs", "Colts", "Commanders", "Cowboys",
+    "Dolphins", "Eagles", "Falcons", "Giants", "Jaguars", "Jets", "Lions",
+    "Packers", "Panthers", "Patriots", "Raiders", "Rams", "Ravens", "Saints",
+    "Seahawks", "Steelers", "Texans", "Titans", "Vikings"
+  ],
+  "weeks": {
+    "1": [
+      {
+        "home": "Eagles",
+        "away": "Cowboys",
+        "kickoff": "2025-09-05T00:20:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Chiefs",
+        "kickoff": "2025-09-06T00:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Raiders",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Steelers",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Dolphins",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Cardinals",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Giants",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Panthers",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Bengals",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Buccaneers",
+        "kickoff": "2025-09-07T17:00:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Titans",
+        "kickoff": "2025-09-07T20:05:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "49ers",
+        "kickoff": "2025-09-07T20:05:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Lions",
+        "kickoff": "2025-09-07T20:25:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Texans",
+        "kickoff": "2025-09-07T20:25:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Ravens",
+        "kickoff": "2025-09-08T00:20:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Vikings",
+        "kickoff": "2025-09-09T00:15:00Z"
+      }
+    ],
+    "2": [
+      {
+        "home": "Packers",
+        "away": "Commanders",
+        "kickoff": "2025-09-12T00:15:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Jaguars",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Bills",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Patriots",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Rams",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Browns",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "49ers",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Giants",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Seahawks",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Bears",
+        "kickoff": "2025-09-14T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Broncos",
+        "kickoff": "2025-09-14T20:05:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Panthers",
+        "kickoff": "2025-09-14T20:05:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Eagles",
+        "kickoff": "2025-09-14T20:25:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Falcons",
+        "kickoff": "2025-09-15T00:20:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Buccaneers",
+        "kickoff": "2025-09-15T23:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Chargers",
+        "kickoff": "2025-09-16T02:00:00Z"
+      }
+    ],
+    "3": [
+      {
+        "home": "Bills",
+        "away": "Dolphins",
+        "kickoff": "2025-09-19T00:15:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Steelers",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Texans",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Colts",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Bengals",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Jets",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Packers",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Raiders",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Falcons",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Rams",
+        "kickoff": "2025-09-21T17:00:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Saints",
+        "kickoff": "2025-09-21T20:05:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Broncos",
+        "kickoff": "2025-09-21T20:05:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Cowboys",
+        "kickoff": "2025-09-21T20:25:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Cardinals",
+        "kickoff": "2025-09-21T20:25:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Chiefs",
+        "kickoff": "2025-09-21T23:15:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Lions",
+        "kickoff": "2025-09-23T00:15:00Z"
+      }
+    ],
+    "4": [
+      {
+        "home": "Cardinals",
+        "away": "Seahawks",
+        "kickoff": "2025-09-26T00:15:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Vikings",
+        "kickoff": "2025-09-28T13:30:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Saints",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Commanders",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Chargers",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Titans",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Browns",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Panthers",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Eagles",
+        "kickoff": "2025-09-28T17:00:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Jaguars",
+        "kickoff": "2025-09-28T20:05:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Colts",
+        "kickoff": "2025-09-28T20:05:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Ravens",
+        "kickoff": "2025-09-28T20:25:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Bears",
+        "kickoff": "2025-09-28T20:25:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Packers",
+        "kickoff": "2025-09-29T00:20:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Jets",
+        "kickoff": "2025-09-29T23:15:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Bengals",
+        "kickoff": "2025-09-30T00:15:00Z"
+      }
+    ],
+    "5": [
+      {
+        "home": "Rams",
+        "away": "49ers",
+        "kickoff": "2025-10-03T00:15:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Vikings",
+        "kickoff": "2025-10-05T13:30:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Giants",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Broncos",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Texans",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Cowboys",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Raiders",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Dolphins",
+        "kickoff": "2025-10-05T17:00:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Titans",
+        "kickoff": "2025-10-05T20:05:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Buccaneers",
+        "kickoff": "2025-10-05T20:05:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Commanders",
+        "kickoff": "2025-10-05T20:25:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Lions",
+        "kickoff": "2025-10-05T20:25:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Patriots",
+        "kickoff": "2025-10-06T00:20:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Chiefs",
+        "kickoff": "2025-10-07T00:15:00Z"
+      }
+    ],
+    "6": [
+      {
+        "home": "Giants",
+        "away": "Eagles",
+        "kickoff": "2025-10-10T00:15:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Broncos",
+        "kickoff": "2025-10-12T13:30:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Browns",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Chargers",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "49ers",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Seahawks",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Cowboys",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Rams",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Cardinals",
+        "kickoff": "2025-10-12T17:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Titans",
+        "kickoff": "2025-10-12T20:05:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Bengals",
+        "kickoff": "2025-10-12T20:25:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Patriots",
+        "kickoff": "2025-10-12T20:25:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Lions",
+        "kickoff": "2025-10-13T00:20:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Bears",
+        "kickoff": "2025-10-13T23:15:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Bills",
+        "kickoff": "2025-10-14T00:15:00Z"
+      }
+    ],
+    "7": [
+      {
+        "home": "Bengals",
+        "away": "Steelers",
+        "kickoff": "2025-10-17T00:15:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Rams",
+        "kickoff": "2025-10-19T13:30:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Patriots",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Dolphins",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Raiders",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Panthers",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Saints",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Eagles",
+        "kickoff": "2025-10-19T17:00:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Giants",
+        "kickoff": "2025-10-19T20:05:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Colts",
+        "kickoff": "2025-10-19T20:05:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Commanders",
+        "kickoff": "2025-10-19T20:25:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Packers",
+        "kickoff": "2025-10-19T20:25:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Falcons",
+        "kickoff": "2025-10-20T00:20:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Buccaneers",
+        "kickoff": "2025-10-20T23:00:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Texans",
+        "kickoff": "2025-10-21T02:00:00Z"
+      }
+    ],
+    "8": [
+      {
+        "home": "Chargers",
+        "away": "Vikings",
+        "kickoff": "2025-10-24T00:15:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Jets",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Bears",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Dolphins",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Browns",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Giants",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Bills",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "49ers",
+        "kickoff": "2025-10-26T17:00:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Buccaneers",
+        "kickoff": "2025-10-26T20:05:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Cowboys",
+        "kickoff": "2025-10-26T20:25:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Titans",
+        "kickoff": "2025-10-26T20:25:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Packers",
+        "kickoff": "2025-10-27T00:20:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Commanders",
+        "kickoff": "2025-10-28T00:15:00Z"
+      }
+    ],
+    "9": [
+      {
+        "home": "Dolphins",
+        "away": "Ravens",
+        "kickoff": "2025-10-31T00:15:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Colts",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Falcons",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Bears",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Chargers",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "49ers",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Panthers",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Broncos",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Vikings",
+        "kickoff": "2025-11-02T17:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Jaguars",
+        "kickoff": "2025-11-02T20:05:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Saints",
+        "kickoff": "2025-11-02T20:05:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Chiefs",
+        "kickoff": "2025-11-02T20:25:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Seahawks",
+        "kickoff": "2025-11-03T00:20:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Cardinals",
+        "kickoff": "2025-11-04T00:15:00Z"
+      }
+    ],
+    "10": [
+      {
+        "home": "Broncos",
+        "away": "Raiders",
+        "kickoff": "2025-11-07T00:15:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Falcons",
+        "kickoff": "2025-11-09T13:30:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Jaguars",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Bills",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Patriots",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Browns",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Giants",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Saints",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Ravens",
+        "kickoff": "2025-11-09T17:00:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Cardinals",
+        "kickoff": "2025-11-09T20:05:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Rams",
+        "kickoff": "2025-11-09T20:25:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Lions",
+        "kickoff": "2025-11-09T20:25:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Steelers",
+        "kickoff": "2025-11-10T00:20:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Eagles",
+        "kickoff": "2025-11-11T00:15:00Z"
+      }
+    ],
+    "11": [
+      {
+        "home": "Patriots",
+        "away": "Jets",
+        "kickoff": "2025-11-14T00:15:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Commanders",
+        "kickoff": "2025-11-16T13:30:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Buccaneers",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Chargers",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Bengals",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Panthers",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Packers",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Bears",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Texans",
+        "kickoff": "2025-11-16T17:00:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "49ers",
+        "kickoff": "2025-11-16T20:05:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Seahawks",
+        "kickoff": "2025-11-16T20:05:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Chiefs",
+        "kickoff": "2025-11-16T20:25:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Ravens",
+        "kickoff": "2025-11-16T20:25:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Lions",
+        "kickoff": "2025-11-17T00:20:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Cowboys",
+        "kickoff": "2025-11-18T00:15:00Z"
+      }
+    ],
+    "12": [
+      {
+        "home": "Texans",
+        "away": "Bills",
+        "kickoff": "2025-11-21T00:15:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Patriots",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Steelers",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Colts",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Jets",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Giants",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Seahawks",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Vikings",
+        "kickoff": "2025-11-23T17:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Browns",
+        "kickoff": "2025-11-23T20:05:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Jaguars",
+        "kickoff": "2025-11-23T20:05:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Falcons",
+        "kickoff": "2025-11-23T20:25:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Eagles",
+        "kickoff": "2025-11-23T20:25:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Buccaneers",
+        "kickoff": "2025-11-24T00:20:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Panthers",
+        "kickoff": "2025-11-25T00:15:00Z"
+      }
+    ],
+    "13": [
+      {
+        "home": "Lions",
+        "away": "Packers",
+        "kickoff": "2025-11-27T17:00:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Chiefs",
+        "kickoff": "2025-11-27T20:30:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Bengals",
+        "kickoff": "2025-11-28T00:20:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Bears",
+        "kickoff": "2025-11-28T19:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "49ers",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Jaguars",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Texans",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Cardinals",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Saints",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Falcons",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Rams",
+        "kickoff": "2025-11-30T17:00:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Vikings",
+        "kickoff": "2025-11-30T20:05:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Bills",
+        "kickoff": "2025-11-30T20:25:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Raiders",
+        "kickoff": "2025-11-30T20:25:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Broncos",
+        "kickoff": "2025-12-01T00:20:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Giants",
+        "kickoff": "2025-12-02T00:15:00Z"
+      }
+    ],
+    "14": [
+      {
+        "home": "Lions",
+        "away": "Cowboys",
+        "kickoff": "2025-12-05T00:15:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Colts",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Saints",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Dolphins",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Steelers",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Seahawks",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Titans",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Commanders",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Bears",
+        "kickoff": "2025-12-07T17:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Broncos",
+        "kickoff": "2025-12-07T20:05:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Rams",
+        "kickoff": "2025-12-07T20:25:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Bengals",
+        "kickoff": "2025-12-07T20:25:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Texans",
+        "kickoff": "2025-12-08T00:20:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Eagles",
+        "kickoff": "2025-12-09T00:15:00Z"
+      }
+    ],
+    "15": [
+      {
+        "home": "Buccaneers",
+        "away": "Falcons",
+        "kickoff": "2025-12-12T00:15:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Chargers",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Bills",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Jets",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Ravens",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Raiders",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Cardinals",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Commanders",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Browns",
+        "kickoff": "2025-12-14T17:00:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Lions",
+        "kickoff": "2025-12-14T20:25:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Titans",
+        "kickoff": "2025-12-14T20:25:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Panthers",
+        "kickoff": "2025-12-14T20:25:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Packers",
+        "kickoff": "2025-12-14T20:25:00Z"
+      },
+      {
+        "home": "Seahawks",
+        "away": "Colts",
+        "kickoff": "2025-12-14T20:25:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Vikings",
+        "kickoff": "2025-12-15T00:20:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Dolphins",
+        "kickoff": "2025-12-15T23:30:00Z"
+      }
+    ],
+    "16": [
+      {
+        "home": "Seahawks",
+        "away": "Rams",
+        "kickoff": "2025-12-19T00:15:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Packers",
+        "kickoff": "2025-12-20T20:30:00Z"
+      },
+      {
+        "home": "Commanders",
+        "away": "Eagles",
+        "kickoff": "2025-12-21T00:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Chiefs",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Saints",
+        "away": "Jets",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Ravens",
+        "away": "Patriots",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Bills",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Buccaneers",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Vikings",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Cowboys",
+        "away": "Chargers",
+        "kickoff": "2025-12-21T17:00:00Z"
+      },
+      {
+        "home": "Cardinals",
+        "away": "Falcons",
+        "kickoff": "2025-12-21T20:05:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Jaguars",
+        "kickoff": "2025-12-21T20:05:00Z"
+      },
+      {
+        "home": "Lions",
+        "away": "Steelers",
+        "kickoff": "2025-12-21T20:25:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Raiders",
+        "kickoff": "2025-12-21T20:25:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Bengals",
+        "kickoff": "2025-12-22T00:20:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "49ers",
+        "kickoff": "2025-12-23T00:15:00Z"
+      }
+    ],
+    "17": [
+      {
+        "home": "Commanders",
+        "away": "Cowboys",
+        "kickoff": "2025-12-25T17:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Lions",
+        "kickoff": "2025-12-25T20:30:00Z"
+      },
+      {
+        "home": "Chiefs",
+        "away": "Broncos",
+        "kickoff": "2025-12-26T00:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Giants",
+        "kickoff": "2025-12-27T20:00:00Z"
+      },
+      {
+        "home": "Chargers",
+        "away": "Texans",
+        "kickoff": "2025-12-27T20:00:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Cardinals",
+        "kickoff": "2025-12-27T20:00:00Z"
+      },
+      {
+        "home": "Packers",
+        "away": "Ravens",
+        "kickoff": "2025-12-27T20:00:00Z"
+      },
+      {
+        "home": "Panthers",
+        "away": "Seahawks",
+        "kickoff": "2025-12-27T20:00:00Z"
+      },
+      {
+        "home": "Titans",
+        "away": "Saints",
+        "kickoff": "2025-12-28T17:00:00Z"
+      },
+      {
+        "home": "Browns",
+        "away": "Steelers",
+        "kickoff": "2025-12-28T17:00:00Z"
+      },
+      {
+        "home": "Jets",
+        "away": "Patriots",
+        "kickoff": "2025-12-28T17:00:00Z"
+      },
+      {
+        "home": "Colts",
+        "away": "Jaguars",
+        "kickoff": "2025-12-28T17:00:00Z"
+      },
+      {
+        "home": "Dolphins",
+        "away": "Buccaneers",
+        "kickoff": "2025-12-28T17:00:00Z"
+      },
+      {
+        "home": "Bills",
+        "away": "Eagles",
+        "kickoff": "2025-12-28T20:25:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Bears",
+        "kickoff": "2025-12-29T00:20:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Rams",
+        "kickoff": "2025-12-30T00:15:00Z"
+      }
+    ],
+    "18": [
+      {
+        "home": "Bills",
+        "away": "Jets",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Raiders",
+        "away": "Chiefs",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Steelers",
+        "away": "Ravens",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Bengals",
+        "away": "Browns",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Patriots",
+        "away": "Dolphins",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Jaguars",
+        "away": "Titans",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Broncos",
+        "away": "Chargers",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Texans",
+        "away": "Colts",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Bears",
+        "away": "Lions",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Vikings",
+        "away": "Packers",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Falcons",
+        "away": "Saints",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "49ers",
+        "away": "Seahawks",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Eagles",
+        "away": "Commanders",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Giants",
+        "away": "Cowboys",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Buccaneers",
+        "away": "Panthers",
+        "kickoff": "2026-01-04T20:00:00Z"
+      },
+      {
+        "home": "Rams",
+        "away": "Cardinals",
+        "kickoff": "2026-01-04T20:00:00Z"
+      }
+    ]
+  }
+}

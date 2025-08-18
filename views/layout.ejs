@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Showdown Survivor</title>
+    <link rel="stylesheet" href="/styles.css" />
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+
+    <!-- iOS Safari PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Showdown">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+
+    <!-- Additional Meta Tags -->
+    <meta name="description" content="Premium NFL Survivor Pool Platform">
+    <meta name="keywords" content="NFL, survivor pool, football, betting, pools">
+
+    <!-- PWA Install Banner Styles -->
+    <style>
+        .install-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            display: none;
+            z-index: 1000;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .install-banner.show {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .install-content {
+            flex: 1;
+        }
+
+        .install-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .install-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .install-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .install-btn {
+            background: white;
+            color: #3b82f6;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .install-btn:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+        }
+
+        .dismiss-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .dismiss-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Offline indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1001;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .offline-indicator.show {
+            transform: translateY(0);
+        }
+
+        /* Update available notification */
+        .update-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .update-notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .install-banner {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 12px;
+            }
+
+            .install-banner.show {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .install-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Offline Indicator -->
+<div id="offlineIndicator" class="offline-indicator">
+    📡 You're offline - some features may be limited
+</div>
+
+<!-- Update Notification -->
+<div id="updateNotification" class="update-notification">
+    🎉 App updated! <button onclick="window.location.reload()" style="background: none; border: 1px solid white; color: white; padding: 4px 8px; border-radius: 4px; margin-left: 8px; cursor: pointer;">Refresh</button>
+</div>
+
+<% if (typeof isLanding === 'undefined' || !isLanding) { %>
+    <%- include('partials/header') %>
+    <main class="container">
+        <%- body %>
+    </main>
+    <footer class="footer">© <%= new Date().getFullYear() %> Showdown</footer>
+<% } else { %>
+    <%- body %>
+<% } %>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" class="install-banner">
+    <div class="install-content">
+        <div class="install-title">📱 Install Showdown</div>
+        <div class="install-subtitle">Add to home screen for the best experience</div>
+    </div>
+    <div class="install-buttons">
+        <button id="installBtn" class="install-btn">Install</button>
+        <button id="dismissBtn" class="dismiss-btn">✕</button>
+    </div>
+</div>
+
+<!-- PWA JavaScript -->
+<script>
+    // PWA Installation Logic
+    let deferredPrompt;
+    const installBanner = document.getElementById('installBanner');
+    const installBtn = document.getElementById('installBtn');
+    const dismissBtn = document.getElementById('dismissBtn');
+    const offlineIndicator = document.getElementById('offlineIndicator');
+    const updateNotification = document.getElementById('updateNotification');
+
+    // Check if already dismissed
+    const dismissedInstall = localStorage.getItem('dismissedInstall');
+
+    // Listen for install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('📱 Install prompt available');
+        e.preventDefault();
+        deferredPrompt = e;
+
+        // Show install banner if not dismissed
+        if (!dismissedInstall) {
+            setTimeout(() => {
+                installBanner.classList.add('show');
+            }, 2000); // Wait 2 seconds before showing
+        }
+    });
+
+    // Install button click
+    installBtn?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            console.log(`👤 User ${outcome} the install prompt`);
+
+            deferredPrompt = null;
+            installBanner.classList.remove('show');
+
+            if (outcome === 'accepted') {
+                localStorage.setItem('dismissedInstall', 'true');
+            }
+        }
+    });
+
+    // Dismiss button click
+    dismissBtn?.addEventListener('click', () => {
+        installBanner.classList.remove('show');
+        localStorage.setItem('dismissedInstall', 'true');
+    });
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+            try {
+                const registration = await navigator.serviceWorker.register('/sw.js');
+                console.log('✅ SW registered:', registration);
+
+                // Listen for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('🎉 New version available');
+                            updateNotification.classList.add('show');
+                            setTimeout(() => {
+                                updateNotification.classList.remove('show');
+                            }, 5000);
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error('❌ SW registration failed:', error);
+            }
+        });
+    }
+
+    // Online/Offline Status
+    function updateOnlineStatus() {
+        if (navigator.onLine) {
+            console.log('🌐 Back online');
+            offlineIndicator.classList.remove('show');
+        } else {
+            console.log('📡 Gone offline');
+            offlineIndicator.classList.add('show');
+        }
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus(); // Check initial status
+
+    // Request notification permission
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+        // Request permission after user interaction
+        document.addEventListener('click', () => {
+            if (Notification.permission === 'default') {
+                Notification.requestPermission().then((permission) => {
+                    console.log(`🔔 Notification permission: ${permission}`);
+                });
+            }
+        }, { once: true });
+    }
+
+    // PWA detection
+    function isPWA() {
+        return window.matchMedia('(display-mode: standalone)').matches ||
+            window.navigator.standalone === true;
+    }
+
+    if (isPWA()) {
+        console.log('📱 Running as PWA');
+        document.body.classList.add('pwa-mode');
+    }
+
+    // Log PWA events
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 PWA installed successfully');
+        localStorage.setItem('pwaInstalled', 'true');
+    });
+</script>
+</body>
+</html>

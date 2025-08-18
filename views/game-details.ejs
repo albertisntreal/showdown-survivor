@@ -1,0 +1,87 @@
+<div class="page-header">
+  <h1><%= game.name %> — Game</h1>
+  <div class="page-meta">
+    <span class="page-chip">Players: <%= game.players.length %>/<%= game.maxPlayers %></span>
+    <span class="page-chip">Pot: $<%= pot %></span>
+  </div>
+</div>
+<div class="grid" style="margin-top:16px;">
+  <div class="card">
+    <% const activePlayers = (playersDetailed || []).filter(p => !p.eliminated); %>
+    <h3>Players in this Game (<%= activePlayers.length %>)</h3>
+    <ul class="list">
+      <% if (activePlayers.length === 0) { %>
+        <li class="list-item">No active players yet.</li>
+      <% } %>
+      <% activePlayers.forEach(p => { %>
+        <li class="list-item">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <% if (p.avatarUrl) { %>
+              <img src="<%= p.avatarUrl %>" alt="avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(148, 163, 184, 0.35);" />
+            <% } else { %>
+              <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;">🏈</div>
+            <% } %>
+            <div>
+              <div><strong><%= p.displayName %></strong></div>
+              <div><small>Week <%= week %> pick: <%= p.pick || '— No pick yet' %></small></div>
+            </div>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Players eliminated</h3>
+    <ul class="list">
+      <% const eliminatedPlayers = (playersDetailed || []).filter(p => p.eliminated); %>
+      <% if (eliminatedPlayers.length === 0) { %>
+        <li class="list-item">No eliminated players yet.</li>
+      <% } %>
+      <% eliminatedPlayers.forEach(p => { %>
+        <li class="list-item">
+          <div style="display:flex; align-items:center; gap:10px; justify-content:space-between; width:100%">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <% if (p.avatarUrl) { %>
+                <img src="<%= p.avatarUrl %>" alt="avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(148, 163, 184, 0.35);" />
+              <% } else { %>
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;">🏈</div>
+              <% } %>
+              <div>
+                <div><strong><%= p.displayName %></strong></div>
+              </div>
+            </div>
+            <% 
+              const type = (game.gameType || 'regular');
+              const used = (game.buybacks && game.buybacks[p.id]) ? Number(game.buybacks[p.id]) : 0;
+              const remaining = Math.max(0, 2 - used);
+              const inc = (game.entryFee || 0) * 0.5;
+              const nextCost = (game.entryFee || 0) + (used + 1) * inc;
+            %>
+            <% if (type === 'buyback' && p.id === user.id && remaining > 0) { %>
+              <form method="post" action="/games/<%= game.id %>/buyback" class="inline">
+                <button class="btn" type="submit">Buy Back ($<%= (Math.round(nextCost*100)/100).toFixed(2) %>) — <small><%= remaining %> left</small></button>
+              </form>
+            <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Game Info</h3>
+    <ul class="list">
+      <li class="list-item"><div>Game Type: <strong><%= (game.gameType || 'regular') === 'buyback' ? 'Buy Back' : 'Regular' %></strong></div></li>
+      <li class="list-item"><div>Visibility: <strong><%= game.visibility %></strong></div></li>
+      <% if (game.visibility === 'private') { %>
+        <li class="list-item"><div>Join Key: <code><%= game.joinKey %></code></div></li>
+      <% } %>
+      <li class="list-item"><div>Created: <strong><%= new Date(game.createdAt).toLocaleString() %></strong></div></li>
+      <% if (creator) { %>
+        <li class="list-item"><div>Creator: <strong><%= creator.displayName || (creator.email ? creator.email.split('@')[0] : 'User') %></strong></div></li>
+      <% } %>
+      <li class="list-item"><div>Max Players: <strong><%= game.maxPlayers %></strong></div></li>
+    </ul>
+  </div>
+</div>
+
+<p style="margin-top:16px;"><a class="btn btn-outline" href="/games/<%= game.id %>">← Back to Picks & Matchups</a></p>

@@ -1,0 +1,37 @@
+<h1><%= game.name %></h1>
+<p>Entry Fee: $<%= game.entryFee %> • Players: <%= game.players.length %>/<%= game.maxPlayers %> • Pot: $<%= pot %></p>
+<h2>Week <%= week %> Matchups</h2>
+<% if (weekLocked) { %>
+  <div class="info">Picks are locked for this week.</div>
+<% } %>
+<div class="grid">
+  <div class="card">
+    <h3>Your Pick</h3>
+    <form method="post" action="/games/<%= game.id %>/pick">
+      <label>Choose Team
+        <select name="team" <%= weekLocked ? 'disabled' : '' %>>
+          <option value="">-- Select --</option>
+          <% schedule.forEach(m => { %>
+            <% [m.home, m.away].forEach(t => { %>
+              <option value="<%= t %>" <%= userPick === t ? 'selected' : '' %> <%= pickedTeamsAllWeeks.includes(t) && userPick !== t ? 'disabled' : '' %>><%= t %> <%= pickedTeamsAllWeeks.includes(t) && userPick !== t ? '(used)' : '' %></option>
+            <% }) %>
+          <% }) %>
+        </select>
+      </label>
+      <% if (!weekLocked) { %>
+        <button class="btn primary" type="submit">Save Pick</button>
+      <% } %>
+    </form>
+  </div>
+  <div>
+    <h3>Matchups</h3>
+    <ul class="list">
+      <% schedule.forEach(m => { %>
+        <li class="list-item">
+          <div><strong><%= m.away %></strong> at <strong><%= m.home %></strong></div>
+          <small>Kickoff: <%= new Date(m.kickoff).toLocaleString() %></small>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</div>

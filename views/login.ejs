@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h1>Login / Sign Up</h1>
+  <div class="page-meta">
+    <span class="page-chip">Secure access</span>
+  </div>
+</div>
+<% if (error) { %>
+  <div class="error"><%= error %></div>
+<% } %>
+<form method="post" action="/login" class="card" style="max-width: 420px; margin: 0 auto;">
+  <label>Email
+    <input name="email" type="email" required placeholder="you@example.com" />
+  </label>
+  <label>Password
+    <input name="password" type="password" required minlength="6" placeholder="••••••••" />
+  </label>
+  <label>Display Name (optional)
+    <input name="displayName" placeholder="Shown on leaderboards" />
+  </label>
+  <button class="btn primary" type="submit">Continue</button>
+  <p><small>New here? Enter your email, a password, and optionally a display name to create an account. If the email exists, we'll log you in.</small></p>
+</form>
