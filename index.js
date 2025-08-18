@@ -9,10 +9,8 @@ const { v4: uuidv4 } = require('uuid');
 const webpush = require('web-push');
 
 const app = express();
-const DATA_FILE = path.join(__dirname, 'data', 'store.json');
-
-// Change PORT configuration (around line 11)
 const PORT = process.env.PORT || 3000;
+const DATA_FILE = path.join(__dirname, 'data', 'store.json');
 
 // VAPID Configuration - Use environment variables for production
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || 'BIZtF2mee3R8Rpr8aj4NNiuEnOXn5rDONEeXMGy61p0KZTWOh_744al-_ic_WFX4Df9CMArs9jVXk_4zDweBX4w';
@@ -24,26 +22,6 @@ webpush.setVapidDetails(
     VAPID_PUBLIC_KEY,
     VAPID_PRIVATE_KEY
 );
-
-// Update session secret for production (around line 85)
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'showdown-secret-change-in-production',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // HTTPS in production
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-}));
-
-// Update the final listen call (at the very end)
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🏈 Showdown server listening on port ${PORT}`);
-    console.log(`📊 Tracking ${getAllWeeks(SCHEDULE).length} weeks with ${ALL_TEAMS.length} teams`);
-    console.log(`📱 PWA features enabled with push notifications`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
-
 
 // Import the enhanced schedule loader
 const {
@@ -80,6 +58,7 @@ function readStore() {
         }
     }
 }
+
 function writeStore(store) {
     fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2));
 }
@@ -99,7 +78,6 @@ let CURRENT_WEEK_OVERRIDE = null;
         const OLD_ADMIN_EMAIL = 'albertisntreal@gmail.com';
         const store = readStore();
         if (store && Array.isArray(store.users)) {
-            const before = store.users.length;
             const oldLower = OLD_ADMIN_EMAIL.toLowerCase();
             const hasOld = store.users.some(u => (u.email || '').toLowerCase() === oldLower);
             if (hasOld) {
@@ -122,16 +100,21 @@ app.set('layout', 'layout');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // Added for PWA API endpoints
+
+// Session configuration for production
 app.use(session({
-    secret: 'showdown-secret',
+    secret: process.env.SESSION_SECRET || 'showdown-secret-change-in-production',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
 
 // Enhanced middleware to expose user and helper functions to views
 app.use((req, res, next) => {
     res.locals.user = req.session.user || null;
-    // Expose request object so templates can build absolute URLs when needed
     res.locals.req = req;
 
     // Expose helper functions to all templates
@@ -146,6 +129,7 @@ function requireAuth(req, res, next) {
     if (!req.session.user) return res.redirect('/login');
     next();
 }
+
 function requireAdmin(req, res, next) {
     if (!req.session.user || !req.session.user.isAdmin) return res.status(403).send('Forbidden');
     next();
@@ -209,7 +193,6 @@ function sendPickReminders() {
     const weekLocked = isWeekLocked(currentWeek);
 
     if (!weekLocked) {
-        // Find users who haven't made picks yet
         store.games.forEach(game => {
             const playersWithoutPicks = game.players.filter(playerId => {
                 const picks = game.picks[playerId] || {};
@@ -243,10 +226,10 @@ function getCurrentWeek() {
 
         const firstKick = games.map(g => new Date(g.kickoff).getTime()).sort((a,b)=>a-b)[0];
         if (now < firstKick) {
-            return w; // upcoming week
+            return w;
         }
     }
-    return weekNums[weekNums.length - 1]; // default to last week
+    return weekNums[weekNums.length - 1];
 }
 
 function isWeekLocked(week) {
@@ -276,7 +259,6 @@ function getUpcomingGames(limit = 5) {
         .slice(0, limit);
 }
 
-// Helper function for game statistics
 function getMostPopularPick(players) {
     const pickCounts = {};
     players.forEach(p => {
@@ -298,19 +280,97 @@ function getMostPopularPick(players) {
     return mostPopular ? { team: mostPopular, count: maxCount } : null;
 }
 
+// Helper functions for game results
+function getWeekResults(week) {
+    const store = readStore();
+    return store.gameResults || {};
+}
+
+function saveWeekResults(week, results) {
+    const store = readStore();
+    if (!store.gameResults) store.gameResults = {};
+    store.gameResults[week] = results;
+    writeStore(store);
+}
+
+function processWeekEliminations(week) {
+    const store = readStore();
+    const weekResults = store.gameResults[week];
+    if (!weekResults) return { eliminated: 0, games: [] };
+
+    const games = getGamesByWeek(SCHEDULE, week);
+    let totalEliminated = 0;
+    const processedGames = [];
+
+    games.forEach(game => {
+        const gameKey = `${game.away}_at_${game.home}`;
+        const result = weekResults[gameKey];
+
+        if (result && result.winner) {
+            const losingTeam = result.winner === game.home ? game.away : game.home;
+            let gameEliminated = 0;
+
+            store.games.forEach(pool => {
+                if (!pool.picks) return;
+
+                Object.keys(pool.picks).forEach(userId => {
+                    const userPicks = pool.picks[userId];
+                    if (userPicks[week] === losingTeam && !pool.eliminated.includes(userId)) {
+                        pool.eliminated.push(userId);
+                        gameEliminated++;
+                        totalEliminated++;
+
+                        sendPushNotification(userId, `💀 You've been eliminated from ${pool.name}`, {
+                            title: 'Showdown Survivor - Eliminated',
+                            url: `/games/${pool.id}`
+                        });
+                    }
+                });
+            });
+
+            processedGames.push({
+                matchup: `${game.away} @ ${game.home}`,
+                winner: result.winner,
+                loser: losingTeam,
+                eliminated: gameEliminated
+            });
+        }
+    });
+
+    writeStore(store);
+    return { eliminated: totalEliminated, games: processedGames };
+}
+
+function getBuybackCost(entryFee, nextIndex) {
+    const increment = entryFee * 0.5;
+    return entryFee + nextIndex * increment;
+}
+
+function calculatePot(game) {
+    const base = (game.entryFee || 0) * (game.players ? game.players.length : 0);
+    const buybacks = game.buybacks || {};
+    const ef = game.entryFee || 0;
+    const inc = ef * 0.5;
+    let extra = 0;
+    Object.values(buybacks).forEach(m => {
+        const count = Number(m) || 0;
+        for (let i = 1; i <= count; i++) {
+            extra += ef + i * inc;
+        }
+    });
+    return Math.round((base + extra) * 100) / 100;
+}
+
 // PWA API Routes
-// Get VAPID public key for client
 app.get('/api/vapid-public-key', (req, res) => {
     res.json({ publicKey: VAPID_PUBLIC_KEY });
 });
 
-// Subscribe to push notifications
 app.post('/api/subscribe', requireAuth, (req, res) => {
     const subscription = req.body;
     const store = readStore();
 
     try {
-        // Store subscription for user
         const user = store.users.find(u => u.id === req.session.user.id);
         if (user) {
             user.pushSubscription = subscription;
@@ -325,7 +385,6 @@ app.post('/api/subscribe', requireAuth, (req, res) => {
     }
 });
 
-// Unsubscribe from push notifications
 app.post('/api/unsubscribe', requireAuth, (req, res) => {
     const store = readStore();
 
@@ -344,7 +403,6 @@ app.post('/api/unsubscribe', requireAuth, (req, res) => {
     }
 });
 
-// Test notification endpoint (admin only)
 app.post('/api/test-notification', requireAuth, requireAdmin, (req, res) => {
     const { userId, message } = req.body;
 
@@ -356,7 +414,6 @@ app.post('/api/test-notification', requireAuth, requireAdmin, (req, res) => {
     }
 });
 
-// Schedule pick reminders (admin endpoint)
 app.post('/admin/send-reminders', requireAuth, requireAdmin, (req, res) => {
     try {
         sendPickReminders();
@@ -367,7 +424,7 @@ app.post('/admin/send-reminders', requireAuth, requireAdmin, (req, res) => {
     }
 });
 
-// Routes
+// Main Routes
 app.get('/', (req, res) => {
     res.render('landing', { isLanding: true });
 });
@@ -388,7 +445,7 @@ app.post('/login', (req, res) => {
     }
     const store = readStore();
 
-    // Admin hardcoded: allow login with configured admin credentials
+    // Admin hardcoded credentials
     const ADMIN_EMAIL = 'albertisntreal1180@gmail.com';
     const ADMIN_PASS = 'password';
     if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
@@ -411,7 +468,6 @@ app.post('/login', (req, res) => {
             if (!store.config) store.config = {};
             writeStore(store);
         }
-        // ensure flag
         adminUser.isAdmin = true;
         writeStore(store);
         req.session.user = { id: adminUser.id, email: adminUser.email, displayName: adminUser.displayName || 'Admin', isAdmin: true };
@@ -424,7 +480,6 @@ app.post('/login', (req, res) => {
 
     let user = store.users.find(u => (u.email && u.email.toLowerCase()) === email.toLowerCase());
 
-    // Helpers for password hashing/verification
     const verifyPassword = (pw, saltHex, hashHex) => {
         try {
             const salt = Buffer.from(saltHex, 'hex');
@@ -443,7 +498,6 @@ app.post('/login', (req, res) => {
         if (!verifyPassword(password, user.passwordSalt, user.passwordHash)) {
             return res.render('login', { error: 'Invalid email or password.' });
         }
-        // Successful login
         req.session.user = { id: user.id, email: user.email, displayName: user.displayName, isAdmin: !!user.isAdmin };
         return res.redirect('/lobby');
     } else {
@@ -473,7 +527,6 @@ app.post('/logout', (req, res) => {
     });
 });
 
-// Enhanced lobby route with upcoming games
 app.get('/lobby', requireAuth, (req, res) => {
     const store = readStore();
     const games = store.games;
@@ -488,7 +541,6 @@ app.get('/lobby', requireAuth, (req, res) => {
     });
 });
 
-// Enhanced admin panel
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
     const store = readStore();
     const weekNums = getAllWeeks(SCHEDULE);
@@ -497,12 +549,10 @@ app.get('/admin', requireAuth, requireAdmin, (req, res) => {
         (!g.picks || Object.keys(g.picks).length === 0)
     );
 
-    // Get current week stats
     const currentWeek = getCurrentWeek();
     const currentGames = getGamesByWeek(SCHEDULE, currentWeek);
     const weekLocked = isWeekLocked(currentWeek);
 
-    // Count total picks for current week across all games
     const totalPicks = (store.games || []).reduce((acc, game) => {
         const gamePicks = Object.values(game.picks || {}).filter(picks => picks[currentWeek]).length;
         return acc + gamePicks;
@@ -551,9 +601,7 @@ app.post('/admin/games/:id/delete', requireAuth, requireAdmin, (req, res) => {
     const store = readStore();
     const idx = (store.games || []).findIndex(g => g.id === id);
     if (idx === -1) return res.status(404).send('Game not found');
-    // Remove the game regardless of status
     store.games.splice(idx, 1);
-    // Clean from users' joinedGames
     (store.users || []).forEach(u => {
         if (Array.isArray(u.joinedGames)) {
             u.joinedGames = u.joinedGames.filter(gid => gid !== id);
@@ -574,72 +622,7 @@ app.post('/admin/games/cleanup', requireAuth, requireAdmin, (req, res) => {
     res.redirect('/admin');
 });
 
-// Helper function to get game results for a week
-function getWeekResults(week) {
-    const store = readStore();
-    return store.gameResults || {};
-}
-
-function saveWeekResults(week, results) {
-    const store = readStore();
-    if (!store.gameResults) store.gameResults = {};
-    store.gameResults[week] = results;
-    writeStore(store);
-}
-
-// Helper function to eliminate players based on results
-function processWeekEliminations(week) {
-    const store = readStore();
-    const weekResults = store.gameResults[week];
-    if (!weekResults) return { eliminated: 0, games: [] };
-
-    const games = getGamesByWeek(SCHEDULE, week);
-    let totalEliminated = 0;
-    const processedGames = [];
-
-    // Process each game in the schedule
-    games.forEach(game => {
-        const gameKey = `${game.away}_at_${game.home}`;
-        const result = weekResults[gameKey];
-
-        if (result && result.winner) {
-            const losingTeam = result.winner === game.home ? game.away : game.home;
-            let gameEliminated = 0;
-
-            // Check all pools for players who picked the losing team
-            store.games.forEach(pool => {
-                if (!pool.picks) return;
-
-                Object.keys(pool.picks).forEach(userId => {
-                    const userPicks = pool.picks[userId];
-                    if (userPicks[week] === losingTeam && !pool.eliminated.includes(userId)) {
-                        pool.eliminated.push(userId);
-                        gameEliminated++;
-                        totalEliminated++;
-
-                        // Send elimination notification
-                        sendPushNotification(userId, `💀 You've been eliminated from ${pool.name}`, {
-                            title: 'Showdown Survivor - Eliminated',
-                            url: `/games/${pool.id}`
-                        });
-                    }
-                });
-            });
-
-            processedGames.push({
-                matchup: `${game.away} @ ${game.home}`,
-                winner: result.winner,
-                loser: losingTeam,
-                eliminated: gameEliminated
-            });
-        }
-    });
-
-    writeStore(store);
-    return { eliminated: totalEliminated, games: processedGames };
-}
-
-// Admin Results Page - Show all games for current week
+// Admin Results Routes
 app.get('/admin/results', requireAuth, requireAdmin, (req, res) => {
     const requested = parseInt(req.query.week, 10);
     const week = Number.isInteger(requested) ? requested : getCurrentWeek();
@@ -647,14 +630,12 @@ app.get('/admin/results', requireAuth, requireAdmin, (req, res) => {
     const weekResults = getWeekResults(week);
     const store = readStore();
 
-    // Count total picks per game
     const gamePickCounts = {};
     games.forEach(game => {
         gamePickCounts[game.home] = 0;
         gamePickCounts[game.away] = 0;
     });
 
-    // Count picks across all pools
     store.games.forEach(pool => {
         if (!pool.picks) return;
         Object.values(pool.picks).forEach(userPicks => {
@@ -665,7 +646,6 @@ app.get('/admin/results', requireAuth, requireAdmin, (req, res) => {
         });
     });
 
-    // Prepare games with results and pick counts
     const gamesWithData = games.map(game => {
         const gameKey = `${game.away}_at_${game.home}`;
         const result = weekResults[gameKey];
@@ -694,7 +674,6 @@ app.get('/admin/results', requireAuth, requireAdmin, (req, res) => {
     });
 });
 
-// Set Game Winner
 app.post('/admin/results/set-winner', requireAuth, requireAdmin, (req, res) => {
     const { week, gameKey, winner } = req.body;
 
@@ -705,18 +684,15 @@ app.post('/admin/results/set-winner', requireAuth, requireAdmin, (req, res) => {
     const weekNum = parseInt(week, 10);
     const weekResults = getWeekResults(weekNum);
 
-    // Update the result
     weekResults[gameKey] = {
         winner: winner,
         timestamp: new Date().toISOString()
     };
 
     saveWeekResults(weekNum, weekResults);
-
     res.json({ success: true, message: `${winner} marked as winner` });
 });
 
-// Set Winners in Bulk
 app.post('/admin/results/set-winners-bulk', requireAuth, requireAdmin, (req, res) => {
     const { week, winners } = req.body;
     if (!week) {
@@ -743,7 +719,6 @@ app.post('/admin/results/set-winners-bulk', requireAuth, requireAdmin, (req, res
     return res.json({ success: true, saved: Object.keys(winnersMap || {}).length });
 });
 
-// Process Week Eliminations
 app.post('/admin/results/process-eliminations', requireAuth, requireAdmin, (req, res) => {
     const { week } = req.body;
 
@@ -762,7 +737,6 @@ app.post('/admin/results/process-eliminations', requireAuth, requireAdmin, (req,
     });
 });
 
-// Get Results for Specific Week (AJAX)
 app.get('/admin/results/:week', requireAuth, requireAdmin, (req, res) => {
     const week = parseInt(req.params.week, 10);
     const games = getGamesByWeek(SCHEDULE, week);
@@ -789,7 +763,6 @@ app.get('/admin/results/:week', requireAuth, requireAdmin, (req, res) => {
     });
 });
 
-// Clear Week Results (for testing/corrections)
 app.post('/admin/results/clear-week', requireAuth, requireAdmin, (req, res) => {
     const { week } = req.body;
 
@@ -800,13 +773,9 @@ app.post('/admin/results/clear-week', requireAuth, requireAdmin, (req, res) => {
     const weekNum = parseInt(week, 10);
     const store = readStore();
 
-    // Clear results
     if (store.gameResults && store.gameResults[weekNum]) {
         delete store.gameResults[weekNum];
     }
-
-    // Reset eliminations for this week (optional - might want to be more careful here)
-    // This is a simple implementation - in production you might want more sophisticated rollback
 
     writeStore(store);
 
@@ -816,6 +785,7 @@ app.post('/admin/results/clear-week', requireAuth, requireAdmin, (req, res) => {
     });
 });
 
+// Game Routes
 app.post('/games', requireAuth, (req, res) => {
     const { name, entryFee, maxPlayers, visibility, joinKey, gameType } = req.body;
     const store = readStore();
@@ -830,14 +800,14 @@ app.post('/games', requireAuth, (req, res) => {
         visibility: visibility === 'private' ? 'private' : 'public',
         joinKey: visibility === 'private' ? (joinKey || '') : '',
         gameType: gameType === 'buyback' ? 'buyback' : 'regular',
-        buybacks: {}, // { userId: numberOfBuybacks }
+        buybacks: {},
         players: [creatorId],
-        picks: {}, // { userId: { weekNumber: teamName } }
-        eliminated: [], // userIds
+        picks: {},
+        eliminated: [],
         winnerId: null,
         createdAt: new Date().toISOString()
     };
-    // add to user's joinedGames
+
     store.games.push(game);
     const user = store.users.find(u => u.id === creatorId);
     if (user && !user.joinedGames.includes(game.id)) user.joinedGames.push(game.id);
@@ -873,28 +843,6 @@ app.post('/games/:id/join', requireAuth, (req, res) => {
     res.redirect(`/games/${id}`);
 });
 
-// Helper: calculate buyback cost and total pot for a game
-function getBuybackCost(entryFee, nextIndex) {
-    // nextIndex starts at 1 for the first buy-back
-    const increment = entryFee * 0.5;
-    return entryFee + nextIndex * increment;
-}
-function calculatePot(game) {
-    const base = (game.entryFee || 0) * (game.players ? game.players.length : 0);
-    const buybacks = game.buybacks || {};
-    const ef = game.entryFee || 0;
-    const inc = ef * 0.5;
-    let extra = 0;
-    Object.values(buybacks).forEach(m => {
-        const count = Number(m) || 0;
-        for (let i = 1; i <= count; i++) {
-            extra += ef + i * inc;
-        }
-    });
-    return Math.round((base + extra) * 100) / 100;
-}
-
-// Enhanced game view route
 app.get('/games/:id', requireAuth, (req, res) => {
     const { id } = req.params;
     req.session.currentGameId = id;
@@ -910,14 +858,12 @@ app.get('/games/:id', requireAuth, (req, res) => {
     const pickedTeamsAllWeeks = new Set(Object.values(userPicks));
     const weekLocked = isWeekLocked(week);
 
-    // Build enhanced players roster
     const usersById = new Map((store.users || []).map(u => [u.id, u]));
     const playersDetailed = (game.players || []).map(uid => {
         const u = usersById.get(uid) || { id: uid, displayName: 'Unknown', email: '' };
         const pick = (game.picks && game.picks[uid] && game.picks[uid][week]) ? game.picks[uid][week] : null;
         const eliminated = (game.eliminated || []).includes(uid);
 
-        // Calculate player's season picks for display
         const seasonPicks = game.picks[uid] || {};
         const picksCount = Object.keys(seasonPicks).length;
 
@@ -935,7 +881,6 @@ app.get('/games/:id', requireAuth, (req, res) => {
 
     const creator = usersById.get(game.creatorId) || null;
 
-    // Add game statistics
     const gameStats = {
         totalPot: calculatePot(game),
         activePlayers: playersDetailed.filter(p => !p.eliminated).length,
@@ -1002,7 +947,6 @@ app.get('/game', requireAuth, (req, res) => {
     return res.redirect(`/games/${gid}/details`);
 });
 
-// New: quick link to picks room
 app.get('/picks', requireAuth, (req, res) => {
     const store = readStore();
     let gid = req.session.currentGameId;
@@ -1016,7 +960,6 @@ app.get('/picks', requireAuth, (req, res) => {
     return res.redirect(`/games/${gid}`);
 });
 
-// Enhanced pick validation with notification
 app.post('/games/:id/pick', requireAuth, (req, res) => {
     const { id } = req.params;
     const { team } = req.body;
@@ -1034,7 +977,6 @@ app.post('/games/:id/pick', requireAuth, (req, res) => {
         return res.status(400).send('Invalid team');
     }
 
-    // Verify team is playing this week
     const weekGames = getGamesByWeek(SCHEDULE, week);
     const teamPlaying = weekGames.some(g => g.home === team || g.away === team);
     if (!teamPlaying) {
@@ -1044,7 +986,6 @@ app.post('/games/:id/pick', requireAuth, (req, res) => {
     const userId = req.session.user.id;
     const picks = game.picks[userId] || {};
 
-    // Enforce unique team across season
     const previouslyUsed = Object.values(picks);
     if (previouslyUsed.includes(team)) {
         return res.status(400).send('You already used this team this season.');
@@ -1066,14 +1007,12 @@ app.post('/games/:id/pick', requireAuth, (req, res) => {
     res.redirect(`/games/${id}`);
 });
 
-// Buy Back endpoint
 app.post('/games/:id/buyback', requireAuth, (req, res) => {
     const { id } = req.params;
     const store = readStore();
     const game = store.games.find(g => g.id === id);
     if (!game) return res.status(404).send('Game not found');
 
-    // Only for buy-back games
     const gameType = game.gameType || 'regular';
     if (gameType !== 'buyback') {
         return res.status(400).send('Buy back is not available for this game.');
@@ -1084,30 +1023,25 @@ app.post('/games/:id/buyback', requireAuth, (req, res) => {
         return res.status(403).send('You are not part of this game.');
     }
 
-    // Must be eliminated to buy back
     if (!(game.eliminated || []).includes(userId)) {
         return res.status(400).send('You are not eliminated.');
     }
 
-    // Check buy-back cap (max 2)
     if (!game.buybacks) game.buybacks = {};
     const used = Number(game.buybacks[userId] || 0);
     if (used >= 2) {
         return res.status(400).send('You have no buy backs remaining.');
     }
 
-    // Process buy back: increment, revive player
     game.buybacks[userId] = used + 1;
     game.eliminated = (game.eliminated || []).filter(uid => uid !== userId);
 
-    // Send buyback notification
     const user = store.users.find(u => u.id === userId);
     sendPushNotification(userId, `You're back in the game! Buyback #${used + 1} successful`, {
         title: `${game.name} - Buyback Successful`,
         url: `/games/${id}`
     });
 
-    // Notify other players
     notifyGamePlayers(id, `${user.displayName} bought back into the game!`, {
         title: `${game.name} - Player Returned`
     });
@@ -1135,7 +1069,7 @@ app.post('/profile', requireAuth, (req, res) => {
     res.redirect('/profile');
 });
 
-// New API endpoints for enhanced functionality
+// API endpoints
 app.get('/api/games/:id/stats', requireAuth, (req, res) => {
     const { id } = req.params;
     const store = readStore();
@@ -1144,7 +1078,6 @@ app.get('/api/games/:id/stats', requireAuth, (req, res) => {
     if (!game) return res.status(404).json({ error: 'Game not found' });
 
     const week = getCurrentWeek();
-    const usersById = new Map((store.users || []).map(u => [u.id, u]));
 
     const stats = {
         totalPlayers: game.players.length,
@@ -1154,7 +1087,6 @@ app.get('/api/games/:id/stats', requireAuth, (req, res) => {
         pickDistribution: {}
     };
 
-    // Calculate pick distribution for current week
     game.players.forEach(pid => {
         const pick = game.picks[pid] && game.picks[pid][week];
         if (pick) {
@@ -1188,7 +1120,8 @@ app.get('/api/schedule/:week', (req, res) => {
     });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+// Start server
+app.listen(PORT, () => {
     console.log(`🏈 Showdown server listening on port ${PORT}`);
     console.log(`📊 Tracking ${getAllWeeks(SCHEDULE).length} weeks with ${ALL_TEAMS.length} teams`);
     console.log(`📱 PWA features enabled with push notifications`);
