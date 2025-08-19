@@ -688,55 +688,48 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/lobby', requireAuth, (req, res) => {
-    console.log('🔍 LOBBY: Route accessed by', req.session.user.displayName);
-
     try {
-        console.log('🔍 LOBBY: Step 1 - Reading store');
+        console.log('LOBBY: Starting lobby route');
+
         const store = readStore() || {};
         const games = Array.isArray(store.games) ? store.games : [];
-        console.log('🔍 LOBBY: Store read OK, games:', games.length);
+        console.log('LOBBY: Store loaded, games:', games.length);
 
-        console.log('🔍 LOBBY: Step 2 - Testing getUpcomingGames');
-        let upcomingGames = [];
-        try {
-            upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
-            console.log('🔍 LOBBY: getUpcomingGames OK, count:', upcomingGames.length);
-        } catch (upcomingError) {
-            console.error('❌ LOBBY: getUpcomingGames failed:', upcomingError.message);
-        }
+        const upcomingGames = getUpcomingGames(3);
+        console.log('LOBBY: Upcoming games:', upcomingGames.length);
 
-        console.log('🔍 LOBBY: Step 3 - Testing getCurrentWeek');
-        let currentWeek = 1;
-        try {
-            currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
-            console.log('🔍 LOBBY: getCurrentWeek OK:', currentWeek);
-        } catch (weekError) {
-            console.error('❌ LOBBY: getCurrentWeek failed:', weekError.message);
-        }
+        const currentWeek = getCurrentWeek();
+        console.log('LOBBY: Current week:', currentWeek);
 
-        console.log('🔍 LOBBY: Step 4 - Testing getAllWeeks');
-        let weeks = [];
-        try {
-            weeks = getAllWeeks ? getAllWeeks(SCHEDULE) : [];
-            console.log('🔍 LOBBY: getAllWeeks OK, count:', weeks.length);
-        } catch (weeksError) {
-            console.error('❌ LOBBY: getAllWeeks failed:', weeksError.message);
-            weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
-        }
+        const weeks = getAllWeeks(SCHEDULE);
+        console.log('LOBBY: All weeks:', weeks.length);
 
-        console.log('🔍 LOBBY: Step 5 - Rendering template');
+        console.log('LOBBY: About to render template');
+
+        // Add timeout protection
+        const timeoutId = setTimeout(() => {
+            console.error('LOBBY: Template render timeout!');
+        }, 5000);
+
         res.render('lobby', {
             games,
             upcomingGames,
             currentWeek,
             allWeeks: weeks
+        }, (err, html) => {
+            clearTimeout(timeoutId);
+            if (err) {
+                console.error('LOBBY: Template render error:', err.message);
+                res.status(500).send('Template error: ' + err.message);
+            } else {
+                console.log('LOBBY: Template rendered successfully');
+                res.send(html);
+            }
         });
-        console.log('✅ LOBBY: Rendered successfully');
 
     } catch (err) {
-        console.error('❌ LOBBY: Critical error:', err.message);
-        console.error('❌ LOBBY: Stack trace:', err.stack);
-        res.status(500).send('Lobby temporarily unavailable');
+        console.error('LOBBY: Route error:', err.message);
+        res.status(500).send('Route error: ' + err.message);
     }
 });
 
