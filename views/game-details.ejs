@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1><%= game.name %> — Game</h1>
   <div class="page-meta">
-    <span class="page-chip">Players: <%= game.players.length %>/<%= game.maxPlayers %></span>
+    <span class="page-chip">Players: <%= (game.players || []).length %>/<%= game.maxPlayers || 0 %></span>
     <span class="page-chip">Pot: $<%= pot %></span>
   </div>
 </div>

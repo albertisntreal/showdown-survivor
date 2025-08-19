@@ -46,7 +46,7 @@
         <li class="list-item">
           <div>
             <strong><a href="/games/<%= g.id %>"><%= g.name %></a></strong><br/>
-            <small><%= g.players.length %>/<%= g.maxPlayers %> players • Entry $<%= g.entryFee %> • <%= g.visibility %> • <%= (g.gameType || 'regular') === 'buyback' ? 'Buy Back' : 'Regular' %></small>
+            <small><%= (g.players || []).length %>/<%= g.maxPlayers || 0 %> players • Entry $<%= g.entryFee %> • <%= g.visibility %> • <%= (g.gameType || 'regular') === 'buyback' ? 'Buy Back' : 'Regular' %></small>
           </div>
           <div>
             <% if (g.visibility === 'private') { %>

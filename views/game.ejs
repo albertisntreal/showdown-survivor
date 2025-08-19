@@ -6,7 +6,7 @@
       <div class="game-meta">
         <span class="week-indicator">Week <%= week %></span>
         <span class="pot-size">💰 $<%= pot %></span>
-        <span class="player-count">👥 <%= game.players.length %>/<%= game.maxPlayers %></span>
+        <span class="player-count">👥 <%= (game.players || []).length %>/<%= game.maxPlayers || 0 %></span>
       </div>
     </div>
     

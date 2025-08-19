@@ -35,7 +35,7 @@
         <li class="list-item">
           <div>
             <strong><a href="/games/<%= g.id %>"><%= g.name %></a></strong>
-            <div><small>Entry $<%= g.entryFee %> • Players <%= g.players.length %>/<%= g.maxPlayers %></small></div>
+            <div><small>Entry $<%= g.entryFee %> • Players <%= (g.players || []).length %>/<%= g.maxPlayers || 0 %></small></div>
           </div>
         </li>
       <% }) %>

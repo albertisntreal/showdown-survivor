@@ -34,11 +34,39 @@ const {
 } = require('./enhanced-schedule-loader');
 
 // Load enhanced schedule data
+console.log('🔍 Loading schedule data...');
 const scheduleData = loadEnhancedSchedule();
 const SCHEDULE = scheduleData.schedule;
 const ALL_TEAMS = scheduleData.teams;
 
-console.log(`📅 Loaded schedule for ${Object.keys(SCHEDULE).length} weeks with ${ALL_TEAMS.length} teams`);
+// DEBUG LOGGING FOR SCHEDULE
+console.log('\n=== SCHEDULE DEBUG INFO ===');
+console.log('scheduleData type:', typeof scheduleData);
+console.log('scheduleData keys:', scheduleData ? Object.keys(scheduleData) : 'null/undefined');
+console.log('SCHEDULE type:', typeof SCHEDULE);
+console.log('SCHEDULE is null/undefined:', SCHEDULE == null);
+
+if (SCHEDULE) {
+    console.log('SCHEDULE keys:', Object.keys(SCHEDULE));
+    console.log('First few weeks:', Object.keys(SCHEDULE).slice(0, 5));
+
+    // Test first week
+    const firstWeek = Object.keys(SCHEDULE)[0];
+    if (firstWeek) {
+        console.log(`Week ${firstWeek} games count:`, SCHEDULE[firstWeek]?.length || 0);
+        if (SCHEDULE[firstWeek] && SCHEDULE[firstWeek][0]) {
+            console.log('Sample game:', SCHEDULE[firstWeek][0]);
+        }
+    }
+} else {
+    console.log('❌ SCHEDULE is null/undefined - this is the problem!');
+}
+
+console.log('ALL_TEAMS type:', typeof ALL_TEAMS);
+console.log('ALL_TEAMS length:', ALL_TEAMS ? ALL_TEAMS.length : 'null/undefined');
+console.log('========================\n');
+
+console.log(`📅 Loaded schedule for ${Object.keys(SCHEDULE || {}).length} weeks with ${(ALL_TEAMS || []).length} teams`);
 
 // Helpers to load/save data
 function readStore() {
@@ -216,52 +244,143 @@ function sendPickReminders() {
 
 // Enhanced utility functions
 function getCurrentWeek() {
-    const weekNums = getAllWeeks(SCHEDULE);
-    if (weekNums.length === 0) return 1;
-
-    if (CURRENT_WEEK_OVERRIDE && weekNums.includes(Number(CURRENT_WEEK_OVERRIDE))) {
-        return Number(CURRENT_WEEK_OVERRIDE);
-    }
-
-    const now = Date.now();
-    for (let i = 0; i < weekNums.length; i++) {
-        const w = weekNums[i];
-        const games = getGamesByWeek(SCHEDULE, w);
-        if (games.length === 0) continue;
-
-        const firstKick = games.map(g => new Date(g.kickoff).getTime()).sort((a,b)=>a-b)[0];
-        if (now < firstKick) {
-            return w;
+    console.log('🔍 getCurrentWeek() called');
+    try {
+        if (!SCHEDULE || typeof SCHEDULE !== 'object') {
+            console.error('❌ SCHEDULE not available in getCurrentWeek, type:', typeof SCHEDULE);
+            return 1;
         }
+
+        const weekNums = getAllWeeks(SCHEDULE);
+        console.log('📅 Available weeks:', weekNums.length);
+
+        if (weekNums.length === 0) {
+            console.warn('⚠️ No weeks found in schedule');
+            return 1;
+        }
+
+        if (CURRENT_WEEK_OVERRIDE && weekNums.includes(Number(CURRENT_WEEK_OVERRIDE))) {
+            console.log('🔧 Using admin week override:', CURRENT_WEEK_OVERRIDE);
+            return Number(CURRENT_WEEK_OVERRIDE);
+        }
+
+        const now = Date.now();
+        for (let i = 0; i < weekNums.length; i++) {
+            const w = weekNums[i];
+            const games = getGamesByWeek(SCHEDULE, w);
+            if (games.length === 0) continue;
+
+            try {
+                const kickoffTimes = games.map(g => {
+                    const date = new Date(g.kickoff);
+                    if (isNaN(date.getTime())) {
+                        console.warn('Invalid date in game:', g);
+                        return Date.now();
+                    }
+                    return date.getTime();
+                });
+
+                const firstKick = Math.min(...kickoffTimes);
+                if (now < firstKick) {
+                    console.log(`✅ Current week determined: ${w}`);
+                    return w;
+                }
+            } catch (dateError) {
+                console.error('Date parsing error in week', w, ':', dateError);
+                continue;
+            }
+        }
+        const lastWeek = weekNums[weekNums.length - 1];
+        console.log(`📅 Defaulting to last week: ${lastWeek}`);
+        return lastWeek;
+    } catch (error) {
+        console.error('❌ Error in getCurrentWeek:', error);
+        return 1;
     }
-    return weekNums[weekNums.length - 1];
 }
 
 function isWeekLocked(week) {
-    const games = getGamesByWeek(SCHEDULE, week);
-    if (games.length === 0) return false;
+    try {
+        if (!SCHEDULE || typeof SCHEDULE !== 'object') {
+            console.warn('⚠️ SCHEDULE not available in isWeekLocked');
+            return false;
+        }
 
-    const firstKick = games.map(g => new Date(g.kickoff).getTime()).sort((a,b)=>a-b)[0];
-    return Date.now() >= firstKick;
+        const games = getGamesByWeek(SCHEDULE, week);
+        if (games.length === 0) return false;
+
+        const kickoffTimes = games.map(g => {
+            try {
+                const date = new Date(g.kickoff);
+                if (isNaN(date.getTime())) {
+                    console.warn('Invalid date in isWeekLocked:', g.kickoff);
+                    return Date.now();
+                }
+                return date.getTime();
+            } catch (error) {
+                console.error('Date parsing error in isWeekLocked:', error);
+                return Date.now();
+            }
+        });
+
+        const firstKick = Math.min(...kickoffTimes);
+        return Date.now() >= firstKick;
+    } catch (error) {
+        console.error('❌ Error in isWeekLocked:', error);
+        return false;
+    }
 }
 
 function getUpcomingGames(limit = 5) {
-    const now = Date.now();
-    const allGames = [];
+    console.log('🔍 getUpcomingGames() called with limit:', limit);
+    try {
+        if (!SCHEDULE || typeof SCHEDULE !== 'object') {
+            console.error('❌ SCHEDULE not available in getUpcomingGames');
+            return [];
+        }
 
-    getAllWeeks(SCHEDULE).forEach(week => {
-        const games = getGamesByWeek(SCHEDULE, week);
-        games.forEach(game => {
-            const kickoff = new Date(game.kickoff).getTime();
-            if (kickoff > now) {
-                allGames.push({ ...game, week, kickoff });
+        const now = Date.now();
+        const allGames = [];
+
+        getAllWeeks(SCHEDULE).forEach(week => {
+            try {
+                const games = getGamesByWeek(SCHEDULE, week);
+                games.forEach(game => {
+                    try {
+                        if (!game.kickoff) {
+                            console.warn('Game missing kickoff time:', game);
+                            return;
+                        }
+
+                        const kickoffDate = new Date(game.kickoff);
+                        if (isNaN(kickoffDate.getTime())) {
+                            console.warn('Invalid kickoff date:', game.kickoff, 'in game:', game);
+                            return;
+                        }
+
+                        const kickoff = kickoffDate.getTime();
+                        if (kickoff > now) {
+                            allGames.push({ ...game, week, kickoff });
+                        }
+                    } catch (gameError) {
+                        console.error('Error processing game:', game, gameError);
+                    }
+                });
+            } catch (weekError) {
+                console.error('Error processing week', week, ':', weekError);
             }
         });
-    });
 
-    return allGames
-        .sort((a, b) => a.kickoff - b.kickoff)
-        .slice(0, limit);
+        const result = allGames
+            .sort((a, b) => a.kickoff - b.kickoff)
+            .slice(0, limit);
+
+        console.log(`✅ getUpcomingGames returning ${result.length} games`);
+        return result;
+    } catch (error) {
+        console.error('❌ Error in getUpcomingGames:', error);
+        return [];
+    }
 }
 
 function getMostPopularPick(players) {
@@ -532,30 +651,108 @@ app.post('/logout', (req, res) => {
     });
 });
 
+// UPDATED LOBBY ROUTE WITH DEBUG LOGGING
 app.get('/lobby', requireAuth, (req, res) => {
+    console.log('\n🔍 === LOBBY PAGE REQUEST ===');
+    console.log('User:', req.session.user.displayName);
+    console.log('Timestamp:', new Date().toISOString());
+
     try {
+        console.log('📊 Reading store...');
         const store = readStore() || {};
         const games = Array.isArray(store.games) ? store.games : [];
-        const upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
-        const currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
-        const weeks = (typeof getAllWeeks === 'function') ? getAllWeeks(SCHEDULE || {}) : [];
+        console.log('✅ Store read successfully, games count:', games.length);
 
+        // Test each function individually with detailed logging
+        let upcomingGames = [];
+        let currentWeek = 1;
+        let weeks = [];
+
+        console.log('🧪 Testing helper functions...');
+
+        // Test getAllWeeks
+        console.log('1. Testing getAllWeeks...');
+        try {
+            if (typeof getAllWeeks === 'function' && SCHEDULE) {
+                weeks = getAllWeeks(SCHEDULE);
+                console.log('   ✅ getAllWeeks successful:', weeks.length, 'weeks');
+            } else {
+                console.log('   ❌ getAllWeeks not available or SCHEDULE missing');
+                weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+            }
+        } catch (weeksError) {
+            console.log('   ❌ getAllWeeks failed:', weeksError.message);
+            weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+        }
+
+        // Test getCurrentWeek
+        console.log('2. Testing getCurrentWeek...');
+        try {
+            if (typeof getCurrentWeek === 'function') {
+                currentWeek = getCurrentWeek();
+                console.log('   ✅ getCurrentWeek successful:', currentWeek);
+            } else {
+                console.log('   ❌ getCurrentWeek function not available');
+                currentWeek = 1;
+            }
+        } catch (currentWeekError) {
+            console.log('   ❌ getCurrentWeek failed:', currentWeekError.message);
+            currentWeek = 1;
+        }
+
+        // Test getUpcomingGames
+        console.log('3. Testing getUpcomingGames...');
+        try {
+            if (typeof getUpcomingGames === 'function') {
+                upcomingGames = getUpcomingGames(3);
+                console.log('   ✅ getUpcomingGames successful:', upcomingGames.length, 'games');
+            } else {
+                console.log('   ❌ getUpcomingGames function not available');
+                upcomingGames = [];
+            }
+        } catch (upcomingError) {
+            console.log('   ❌ getUpcomingGames failed:', upcomingError.message);
+            console.log('   Error details:', upcomingError.stack);
+            upcomingGames = [];
+        }
+
+        console.log('📋 Final lobby data:');
+        console.log('   - Games:', games.length);
+        console.log('   - Upcoming games:', upcomingGames.length);
+        console.log('   - Current week:', currentWeek);
+        console.log('   - Total weeks:', weeks.length);
+
+        console.log('🎨 Rendering lobby template...');
         res.render('lobby', {
             games,
             upcomingGames,
             currentWeek,
             allWeeks: weeks
         });
+        console.log('✅ Lobby rendered successfully');
+
     } catch (err) {
-        console.error('Error rendering /lobby:', err);
-        // Render a minimal safe lobby to avoid crashing in production
-        res.status(200).render('lobby', {
-            games: [],
-            upcomingGames: [],
-            currentWeek: 1,
-            allWeeks: []
-        });
+        console.log('❌ CRITICAL ERROR in lobby route:');
+        console.log('Error message:', err.message);
+        console.log('Error stack:', err.stack);
+
+        // Try to render a safe fallback
+        try {
+            console.log('🚨 Attempting fallback render...');
+            res.status(500).render('lobby', {
+                games: [],
+                upcomingGames: [],
+                currentWeek: 1,
+                allWeeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                error: 'Some features are temporarily unavailable.'
+            });
+            console.log('✅ Fallback render successful');
+        } catch (renderError) {
+            console.log('❌ FALLBACK RENDER FAILED:', renderError.message);
+            res.status(500).send('Internal Server Error - Please contact support');
+        }
     }
+    console.log('=== END LOBBY REQUEST ===\n');
 });
 
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
