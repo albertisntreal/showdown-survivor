@@ -1,42 +1,42 @@
-{
-    "name": "Showdown Survivor",
-    "short_name": "Showdown",
-    "description": "Premium NFL Survivor Pool Platform",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0f172a",
-    "theme_color": "#3b82f6",
-    "orientation": "portrait",
-    "scope": "/",
-    "icons": [
-    {
-        "src": "/images/icon-192.png",
-        "sizes": "192x192",
-        "type": "image/png",
-        "purpose": "any maskable"
-    },
-    {
-        "src": "/images/icon-512.png",
-        "sizes": "512x512",
-        "type": "image/png",
-        "purpose": "any maskable"
+const CACHE_NAME = 'showdown-v1.0';
+const urlsToCache = [
+    '/',
+    '/lobby',
+    '/login',
+    '/rules',
+    '/styles.css',
+    '/manifest.json'
+];
+
+self.addEventListener('install', (event) => {
+    console.log('Service Worker installing...');
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => cache.addAll(urlsToCache))
+            .then(() => self.skipWaiting())
+    );
+});
+
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker activating...');
+    event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (event) => {
+    // Skip non-GET requests (like POST /login)
+    if (event.request.method !== 'GET') {
+        return;
     }
-],
-    "categories": ["sports", "games"],
-    "shortcuts": [
-    {
-        "name": "Make Pick",
-        "short_name": "Pick",
-        "description": "Make your weekly pick",
-        "url": "/picks",
-        "icons": [{ "src": "/images/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-        "name": "View Lobby",
-        "short_name": "Lobby",
-        "description": "View available pools",
-        "url": "/lobby",
-        "icons": [{ "src": "/images/icon-192.png", "sizes": "192x192" }]
+
+    // Skip external URLs
+    if (!event.request.url.startsWith(self.location.origin)) {
+        return;
     }
-]
-}
+
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                return response || fetch(event.request);
+            })
+    );
+});
