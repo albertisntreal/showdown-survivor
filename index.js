@@ -689,47 +689,15 @@ app.post('/logout', (req, res) => {
 
 app.get('/lobby', requireAuth, (req, res) => {
     try {
-        console.log('LOBBY: Starting lobby route');
-
         const store = readStore() || {};
         const games = Array.isArray(store.games) ? store.games : [];
-        console.log('LOBBY: Store loaded, games:', games.length);
 
-        const upcomingGames = getUpcomingGames(3);
-        console.log('LOBBY: Upcoming games:', upcomingGames.length);
-
-        const currentWeek = getCurrentWeek();
-        console.log('LOBBY: Current week:', currentWeek);
-
-        const weeks = getAllWeeks(SCHEDULE);
-        console.log('LOBBY: All weeks:', weeks.length);
-
-        console.log('LOBBY: About to render template');
-
-        // Add timeout protection
-        const timeoutId = setTimeout(() => {
-            console.error('LOBBY: Template render timeout!');
-        }, 5000);
-
-        res.render('lobby', {
-            games,
-            upcomingGames,
-            currentWeek,
-            allWeeks: weeks
-        }, (err, html) => {
-            clearTimeout(timeoutId);
-            if (err) {
-                console.error('LOBBY: Template render error:', err.message);
-                res.status(500).send('Template error: ' + err.message);
-            } else {
-                console.log('LOBBY: Template rendered successfully');
-                res.send(html);
-            }
+        res.render('lobby-safe', {
+            games
         });
 
     } catch (err) {
-        console.error('LOBBY: Route error:', err.message);
-        res.status(500).send('Route error: ' + err.message);
+        res.status(500).send('Lobby error: ' + err.message);
     }
 });
 

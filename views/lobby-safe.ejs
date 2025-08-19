@@ -1,0 +1,76 @@
+<div class="page-header">
+    <h1>Lobby</h1>
+    <div class="page-meta">
+        <span class="page-chip">Create or join games</span>
+    </div>
+</div>
+
+<!-- Debug info (remove later) -->
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="error">Error: <%= error %></div>
+<% } %>
+
+<section class="grid">
+    <div class="card">
+        <h2>Create a Game</h2>
+        <form method="post" action="/games">
+            <label>Pool Name
+                <input name="name" placeholder="My Office Pool" />
+            </label>
+            <label>Entry Fee ($)
+                <input name="entryFee" type="number" min="0" step="1" value="20" />
+            </label>
+            <label>Max Players
+                <input name="maxPlayers" type="number" min="2" step="1" value="50" />
+            </label>
+            <label>Game Type
+                <select name="gameType">
+                    <option value="regular">Regular</option>
+                    <option value="buyback">Buy Back</option>
+                </select>
+            </label>
+            <label>Visibility
+                <select name="visibility">
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
+                </select>
+            </label>
+            <label>Join Key (private games)
+                <input name="joinKey" placeholder="Secret key" />
+            </label>
+            <button class="btn primary" type="submit">Create</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Public Games</h2>
+        <ul class="list">
+            <%
+            const safeGames = (typeof games !== 'undefined' && Array.isArray(games)) ? games : [];
+            %>
+            <% if (safeGames.length === 0) { %>
+                <li class="list-item">No games yet. Create one!</li>
+            <% } %>
+            <% safeGames.forEach(g => { %>
+                <li class="list-item">
+                    <div>
+                        <strong><a href="/games/<%= g.id || 'unknown' %>"><%= g.name || 'Unnamed Game' %></a></strong><br/>
+                        <small><%= (g.players || []).length %>/<%= g.maxPlayers || 0 %> players • Entry $<%= g.entryFee || 0 %> • <%= g.visibility || 'public' %> • <%= (g.gameType || 'regular') === 'buyback' ? 'Buy Back' : 'Regular' %></small>
+                    </div>
+                    <div>
+                        <% if ((g.visibility || 'public') === 'private') { %>
+                            <form method="post" action="/games/<%= g.id || 'unknown' %>/join" class="inline">
+                                <input name="key" placeholder="Join key" />
+                                <button class="btn" type="submit">Join</button>
+                            </form>
+                        <% } else { %>
+                            <form method="post" action="/games/<%= g.id || 'unknown' %>/join" class="inline">
+                                <button class="btn" type="submit">Join</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </li>
+            <% }) %>
+        </ul>
+    </div>
+</section>
