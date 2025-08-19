@@ -563,29 +563,36 @@ app.get('/rules', (req, res) => {
 });
 
 app.get('/debug', (req, res) => {
-    res.json({
-        status: 'Server running',
-        timestamp: new Date().toISOString()
-    });
-});
-
-
-app.get('/debug', (req, res) => {
     const debugInfo = {
         serverRunning: true,
-        timestamp: new Date().toISOString(),
-        scheduleType: typeof SCHEDULE,
-        scheduleExists: !!SCHEDULE,
-        functionsAvailable: {
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        debugInfo.scheduleType = typeof SCHEDULE;
+        debugInfo.scheduleExists = !!SCHEDULE;
+
+        if (SCHEDULE) {
+            debugInfo.scheduleWeeks = Object.keys(SCHEDULE);
+            debugInfo.weekCount = Object.keys(SCHEDULE).length;
+            debugInfo.week1Games = SCHEDULE["1"] ? SCHEDULE["1"].length : 0;
+        }
+
+        debugInfo.functionsAvailable = {
             getAllWeeks: typeof getAllWeeks,
             getCurrentWeek: typeof getCurrentWeek,
             getUpcomingGames: typeof getUpcomingGames
-        }
-    };
+        };
 
-    if (SCHEDULE) {
-        debugInfo.scheduleWeeks = Object.keys(SCHEDULE).length;
-        debugInfo.firstWeek = Object.keys(SCHEDULE)[0];
+        // Test getAllWeeks
+        try {
+            debugInfo.allWeeksResult = getAllWeeks(SCHEDULE);
+        } catch (e) {
+            debugInfo.allWeeksError = e.message;
+        }
+
+    } catch (error) {
+        debugInfo.error = error.message;
     }
 
     res.json(debugInfo);
