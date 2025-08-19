@@ -563,33 +563,32 @@ app.get('/rules', (req, res) => {
 });
 
 app.get('/debug', (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+
     const debugInfo = {
         serverRunning: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
     };
 
     try {
-        // Test getCurrentWeek
-        try {
-            debugInfo.currentWeek = getCurrentWeek();
-        } catch (e) {
-            debugInfo.currentWeekError = e.message;
-        }
+        // Check if files exist
+        debugInfo.filesExist = {
+            enhancedScheduleLoader: fs.existsSync('./enhanced-schedule-loader.js'),
+            dataDirectory: fs.existsSync('./data'),
+            storeJson: fs.existsSync('./data/store.json'),
+            scheduleJson: fs.existsSync('./data/schedule-2025.json'),
+            viewsDirectory: fs.existsSync('./views'),
+            lobbyTemplate: fs.existsSync('./views/lobby.ejs')
+        };
 
-        // Test getUpcomingGames
-        try {
-            const upcoming = getUpcomingGames(3);
-            debugInfo.upcomingGamesCount = upcoming.length;
-            debugInfo.upcomingGames = upcoming;
-        } catch (e) {
-            debugInfo.upcomingGamesError = e.message;
-        }
+        // Check what's in current directory
+        debugInfo.currentDirectoryFiles = fs.readdirSync('.');
 
-        // Test a sample week's games
-        try {
-            debugInfo.week1Games = getGamesByWeek(SCHEDULE, 1);
-        } catch (e) {
-            debugInfo.week1GamesError = e.message;
+        // Check if data directory exists and what's in it
+        if (fs.existsSync('./data')) {
+            debugInfo.dataDirectoryFiles = fs.readdirSync('./data');
         }
 
     } catch (error) {
