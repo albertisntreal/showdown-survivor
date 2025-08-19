@@ -563,6 +563,14 @@ app.get('/rules', (req, res) => {
 });
 
 app.get('/debug', (req, res) => {
+    res.json({
+        status: 'Server running',
+        timestamp: new Date().toISOString()
+    });
+});
+
+
+app.get('/debug', (req, res) => {
     const debugInfo = {
         serverRunning: true,
         timestamp: new Date().toISOString(),
