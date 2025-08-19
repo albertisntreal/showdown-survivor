@@ -687,31 +687,8 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.get('/lobby', requireAuth, (req, res) => {
-    try {
-        const store = readStore() || {};
-        const games = Array.isArray(store.games) ? store.games : [];
-
-        const html = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Lobby Test</title>
-        </head>
-        <body>
-            <h1>Lobby Test Page</h1>
-            <p>This is a plain HTML response, no template rendering.</p>
-            <p>Games found: ${games.length}</p>
-            <p>User: ${req.session.user.displayName}</p>
-        </body>
-        </html>
-        `;
-
-        res.send(html);
-
-    } catch (err) {
-        res.status(500).send('Lobby error: ' + err.message);
-    }
+app.get('/lobby', (req, res) => {
+    res.send('Lobby works - no auth!');
 });
 
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
