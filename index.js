@@ -569,26 +569,27 @@ app.get('/debug', (req, res) => {
     };
 
     try {
-        debugInfo.scheduleType = typeof SCHEDULE;
-        debugInfo.scheduleExists = !!SCHEDULE;
-
-        if (SCHEDULE) {
-            debugInfo.scheduleWeeks = Object.keys(SCHEDULE);
-            debugInfo.weekCount = Object.keys(SCHEDULE).length;
-            debugInfo.week1Games = SCHEDULE["1"] ? SCHEDULE["1"].length : 0;
+        // Test getCurrentWeek
+        try {
+            debugInfo.currentWeek = getCurrentWeek();
+        } catch (e) {
+            debugInfo.currentWeekError = e.message;
         }
 
-        debugInfo.functionsAvailable = {
-            getAllWeeks: typeof getAllWeeks,
-            getCurrentWeek: typeof getCurrentWeek,
-            getUpcomingGames: typeof getUpcomingGames
-        };
-
-        // Test getAllWeeks
+        // Test getUpcomingGames
         try {
-            debugInfo.allWeeksResult = getAllWeeks(SCHEDULE);
+            const upcoming = getUpcomingGames(3);
+            debugInfo.upcomingGamesCount = upcoming.length;
+            debugInfo.upcomingGames = upcoming;
         } catch (e) {
-            debugInfo.allWeeksError = e.message;
+            debugInfo.upcomingGamesError = e.message;
+        }
+
+        // Test a sample week's games
+        try {
+            debugInfo.week1Games = getGamesByWeek(SCHEDULE, 1);
+        } catch (e) {
+            debugInfo.week1GamesError = e.message;
         }
 
     } catch (error) {
