@@ -34,37 +34,9 @@ const {
 } = require('./enhanced-schedule-loader');
 
 // Load enhanced schedule data
-console.log('🔍 Loading schedule data...');
 const scheduleData = loadEnhancedSchedule();
 const SCHEDULE = scheduleData.schedule;
 const ALL_TEAMS = scheduleData.teams;
-
-// DEBUG LOGGING FOR SCHEDULE
-console.log('\n=== SCHEDULE DEBUG INFO ===');
-console.log('scheduleData type:', typeof scheduleData);
-console.log('scheduleData keys:', scheduleData ? Object.keys(scheduleData) : 'null/undefined');
-console.log('SCHEDULE type:', typeof SCHEDULE);
-console.log('SCHEDULE is null/undefined:', SCHEDULE == null);
-
-if (SCHEDULE) {
-    console.log('SCHEDULE keys:', Object.keys(SCHEDULE));
-    console.log('First few weeks:', Object.keys(SCHEDULE).slice(0, 5));
-
-    // Test first week
-    const firstWeek = Object.keys(SCHEDULE)[0];
-    if (firstWeek) {
-        console.log(`Week ${firstWeek} games count:`, SCHEDULE[firstWeek]?.length || 0);
-        if (SCHEDULE[firstWeek] && SCHEDULE[firstWeek][0]) {
-            console.log('Sample game:', SCHEDULE[firstWeek][0]);
-        }
-    }
-} else {
-    console.log('❌ SCHEDULE is null/undefined - this is the problem!');
-}
-
-console.log('ALL_TEAMS type:', typeof ALL_TEAMS);
-console.log('ALL_TEAMS length:', ALL_TEAMS ? ALL_TEAMS.length : 'null/undefined');
-console.log('========================\n');
 
 console.log(`📅 Loaded schedule for ${Object.keys(SCHEDULE || {}).length} weeks with ${(ALL_TEAMS || []).length} teams`);
 
@@ -244,23 +216,16 @@ function sendPickReminders() {
 
 // Enhanced utility functions
 function getCurrentWeek() {
-    console.log('🔍 getCurrentWeek() called');
     try {
         if (!SCHEDULE || typeof SCHEDULE !== 'object') {
-            console.error('❌ SCHEDULE not available in getCurrentWeek, type:', typeof SCHEDULE);
+            console.error('❌ SCHEDULE not available in getCurrentWeek');
             return 1;
         }
 
         const weekNums = getAllWeeks(SCHEDULE);
-        console.log('📅 Available weeks:', weekNums.length);
-
-        if (weekNums.length === 0) {
-            console.warn('⚠️ No weeks found in schedule');
-            return 1;
-        }
+        if (weekNums.length === 0) return 1;
 
         if (CURRENT_WEEK_OVERRIDE && weekNums.includes(Number(CURRENT_WEEK_OVERRIDE))) {
-            console.log('🔧 Using admin week override:', CURRENT_WEEK_OVERRIDE);
             return Number(CURRENT_WEEK_OVERRIDE);
         }
 
@@ -282,7 +247,6 @@ function getCurrentWeek() {
 
                 const firstKick = Math.min(...kickoffTimes);
                 if (now < firstKick) {
-                    console.log(`✅ Current week determined: ${w}`);
                     return w;
                 }
             } catch (dateError) {
@@ -290,9 +254,7 @@ function getCurrentWeek() {
                 continue;
             }
         }
-        const lastWeek = weekNums[weekNums.length - 1];
-        console.log(`📅 Defaulting to last week: ${lastWeek}`);
-        return lastWeek;
+        return weekNums[weekNums.length - 1];
     } catch (error) {
         console.error('❌ Error in getCurrentWeek:', error);
         return 1;
@@ -302,7 +264,6 @@ function getCurrentWeek() {
 function isWeekLocked(week) {
     try {
         if (!SCHEDULE || typeof SCHEDULE !== 'object') {
-            console.warn('⚠️ SCHEDULE not available in isWeekLocked');
             return false;
         }
 
@@ -332,7 +293,6 @@ function isWeekLocked(week) {
 }
 
 function getUpcomingGames(limit = 5) {
-    console.log('🔍 getUpcomingGames() called with limit:', limit);
     try {
         if (!SCHEDULE || typeof SCHEDULE !== 'object') {
             console.error('❌ SCHEDULE not available in getUpcomingGames');
@@ -371,12 +331,9 @@ function getUpcomingGames(limit = 5) {
             }
         });
 
-        const result = allGames
+        return allGames
             .sort((a, b) => a.kickoff - b.kickoff)
             .slice(0, limit);
-
-        console.log(`✅ getUpcomingGames returning ${result.length} games`);
-        return result;
     } catch (error) {
         console.error('❌ Error in getUpcomingGames:', error);
         return [];
@@ -562,122 +519,119 @@ app.get('/rules', (req, res) => {
     res.render('rules');
 });
 
-app.get('/debug', (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
-
-    const debugInfo = {
-        serverRunning: true,
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
-    };
-
+// LOGIN ROUTE WITH DEBUG LOGGING
+app.post('/login', (req, res) => {
     try {
-        // Check if files exist
-        debugInfo.filesExist = {
-            enhancedScheduleLoader: fs.existsSync('./enhanced-schedule-loader.js'),
-            dataDirectory: fs.existsSync('./data'),
-            storeJson: fs.existsSync('./data/store.json'),
-            scheduleJson: fs.existsSync('./data/schedule-2025.json'),
-            viewsDirectory: fs.existsSync('./views'),
-            lobbyTemplate: fs.existsSync('./views/lobby.ejs')
-        };
+        console.log('🔍 LOGIN: Starting login process');
+        const { email, password, displayName } = req.body;
 
-        // Check what's in current directory
-        debugInfo.currentDirectoryFiles = fs.readdirSync('.');
+        console.log('🔍 LOGIN: Request data:', {
+            email: email || 'missing',
+            hasPassword: !!password,
+            hasDisplayName: !!displayName
+        });
 
-        // Check if data directory exists and what's in it
-        if (fs.existsSync('./data')) {
-            debugInfo.dataDirectoryFiles = fs.readdirSync('./data');
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            console.log('❌ LOGIN: Invalid email format');
+            return res.render('login', { error: 'Please enter a valid email address.' });
         }
 
-    } catch (error) {
-        debugInfo.error = error.message;
-    }
+        console.log('✅ LOGIN: Email validation passed');
 
-    res.json(debugInfo);
-});
+        const store = readStore();
+        console.log('✅ LOGIN: Store read successfully');
 
-app.post('/login', (req, res) => {
-    const { email, password, displayName } = req.body;
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return res.render('login', { error: 'Please enter a valid email address.' });
-    }
-    const store = readStore();
+        // Admin hardcoded credentials
+        const ADMIN_EMAIL = 'albertisntreal1180@gmail.com';
+        const ADMIN_PASS = 'password';
+        if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
+            console.log('🔍 LOGIN: Admin login attempt');
+            let adminUser = store.users.find(u => (u.email && u.email.toLowerCase()) === ADMIN_EMAIL.toLowerCase());
+            if (!adminUser) {
+                console.log('🔍 LOGIN: Creating new admin user');
+                const salt = crypto.randomBytes(16);
+                const hash = crypto.scryptSync(ADMIN_PASS, salt, 64);
+                adminUser = {
+                    id: uuidv4(),
+                    email: ADMIN_EMAIL,
+                    displayName: 'Admin',
+                    avatarUrl: '',
+                    joinedGames: [],
+                    earnings: 0,
+                    isAdmin: true,
+                    passwordSalt: salt.toString('hex'),
+                    passwordHash: hash.toString('hex')
+                };
+                store.users.push(adminUser);
+                if (!store.config) store.config = {};
+                writeStore(store);
+                console.log('✅ LOGIN: Admin user created');
+            }
+            adminUser.isAdmin = true;
+            writeStore(store);
+            req.session.user = { id: adminUser.id, email: adminUser.email, displayName: adminUser.displayName || 'Admin', isAdmin: true };
+            console.log('✅ LOGIN: Admin login successful, redirecting to /admin');
+            return res.redirect('/admin');
+        }
 
-    // Admin hardcoded credentials
-    const ADMIN_EMAIL = 'albertisntreal1180@gmail.com';
-    const ADMIN_PASS = 'password';
-    if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASS) {
-        let adminUser = store.users.find(u => (u.email && u.email.toLowerCase()) === ADMIN_EMAIL.toLowerCase());
-        if (!adminUser) {
+        if (!password || password.length < 6) {
+            console.log('❌ LOGIN: Password too short');
+            return res.render('login', { error: 'Password must be at least 6 characters.' });
+        }
+
+        console.log('🔍 LOGIN: Looking for existing user');
+        let user = store.users.find(u => (u.email && u.email.toLowerCase()) === email.toLowerCase());
+
+        const verifyPassword = (pw, saltHex, hashHex) => {
+            try {
+                const salt = Buffer.from(saltHex, 'hex');
+                const derived = crypto.scryptSync(pw, salt, 64);
+                const hash = Buffer.from(hashHex, 'hex');
+                return crypto.timingSafeEqual(derived, hash);
+            } catch (e) {
+                console.error('Password verification error:', e);
+                return false;
+            }
+        };
+
+        if (user) {
+            console.log('🔍 LOGIN: Existing user found');
+            if (!user.passwordHash || !user.passwordSalt) {
+                console.log('❌ LOGIN: User needs password upgrade');
+                return res.render('login', { error: 'This account needs to be upgraded. Please contact support.' });
+            }
+            if (!verifyPassword(password, user.passwordSalt, user.passwordHash)) {
+                console.log('❌ LOGIN: Invalid password');
+                return res.render('login', { error: 'Invalid email or password.' });
+            }
+            req.session.user = { id: user.id, email: user.email, displayName: user.displayName, isAdmin: !!user.isAdmin };
+            console.log('✅ LOGIN: Existing user login successful, redirecting to /lobby');
+            return res.redirect('/lobby');
+        } else {
+            console.log('🔍 LOGIN: Creating new user');
+            // Register new user
             const salt = crypto.randomBytes(16);
-            const hash = crypto.scryptSync(ADMIN_PASS, salt, 64);
-            adminUser = {
+            const hash = crypto.scryptSync(password, salt, 64);
+            const newUser = {
                 id: uuidv4(),
-                email: ADMIN_EMAIL,
-                displayName: 'Admin',
+                email,
+                displayName: displayName && displayName.trim() ? displayName.trim() : email.split('@')[0],
                 avatarUrl: '',
                 joinedGames: [],
                 earnings: 0,
-                isAdmin: true,
                 passwordSalt: salt.toString('hex'),
                 passwordHash: hash.toString('hex')
             };
-            store.users.push(adminUser);
-            if (!store.config) store.config = {};
+            store.users.push(newUser);
             writeStore(store);
+            req.session.user = { id: newUser.id, email: newUser.email, displayName: newUser.displayName, isAdmin: false };
+            console.log('✅ LOGIN: New user created successfully, redirecting to /lobby');
+            return res.redirect('/lobby');
         }
-        adminUser.isAdmin = true;
-        writeStore(store);
-        req.session.user = { id: adminUser.id, email: adminUser.email, displayName: adminUser.displayName || 'Admin', isAdmin: true };
-        return res.redirect('/admin');
-    }
-
-    if (!password || password.length < 6) {
-        return res.render('login', { error: 'Password must be at least 6 characters.' });
-    }
-
-    let user = store.users.find(u => (u.email && u.email.toLowerCase()) === email.toLowerCase());
-
-    const verifyPassword = (pw, saltHex, hashHex) => {
-        try {
-            const salt = Buffer.from(saltHex, 'hex');
-            const derived = crypto.scryptSync(pw, salt, 64);
-            const hash = Buffer.from(hashHex, 'hex');
-            return crypto.timingSafeEqual(derived, hash);
-        } catch (e) {
-            return false;
-        }
-    };
-
-    if (user) {
-        if (!user.passwordHash || !user.passwordSalt) {
-            return res.render('login', { error: 'This account needs to be upgraded. Please contact support.' });
-        }
-        if (!verifyPassword(password, user.passwordSalt, user.passwordHash)) {
-            return res.render('login', { error: 'Invalid email or password.' });
-        }
-        req.session.user = { id: user.id, email: user.email, displayName: user.displayName, isAdmin: !!user.isAdmin };
-        return res.redirect('/lobby');
-    } else {
-        // Register new user
-        const salt = crypto.randomBytes(16);
-        const hash = crypto.scryptSync(password, salt, 64);
-        const newUser = {
-            id: uuidv4(),
-            email,
-            displayName: displayName && displayName.trim() ? displayName.trim() : email.split('@')[0],
-            avatarUrl: '',
-            joinedGames: [],
-            earnings: 0,
-            passwordSalt: salt.toString('hex'),
-            passwordHash: hash.toString('hex')
-        };
-        store.users.push(newUser);
-        writeStore(store);
-        req.session.user = { id: newUser.id, email: newUser.email, displayName: newUser.displayName, isAdmin: false };
-        return res.redirect('/lobby');
+    } catch (error) {
+        console.error('❌ LOGIN: Critical error:', error);
+        console.error('❌ LOGIN: Error stack:', error.stack);
+        res.status(500).send('Login error: ' + error.message);
     }
 });
 
@@ -687,8 +641,30 @@ app.post('/logout', (req, res) => {
     });
 });
 
-app.get('/lobby', (req, res) => {
-    res.send('Lobby works - no auth!');
+app.get('/lobby', requireAuth, (req, res) => {
+    try {
+        const store = readStore() || {};
+        const games = Array.isArray(store.games) ? store.games : [];
+        const upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
+        const currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
+        const weeks = (typeof getAllWeeks === 'function') ? getAllWeeks(SCHEDULE || {}) : [];
+
+        res.render('lobby', {
+            games,
+            upcomingGames,
+            currentWeek,
+            allWeeks: weeks
+        });
+    } catch (err) {
+        console.error('Error rendering /lobby:', err);
+        // Render a minimal safe lobby to avoid crashing in production
+        res.status(200).render('lobby', {
+            games: [],
+            upcomingGames: [],
+            currentWeek: 1,
+            allWeeks: []
+        });
+    }
 });
 
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
@@ -1270,7 +1246,33 @@ app.get('/api/schedule/:week', (req, res) => {
     });
 });
 
-// Start server
+// Debug route for troubleshooting
+app.get('/debug', (req, res) => {
+    const debugInfo = {
+        serverRunning: true,
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    };
+
+    try {
+        // Test login functionality
+        debugInfo.sessionSecret = !!process.env.SESSION_SECRET;
+        debugInfo.hasStore = !!readStore();
+
+        const store = readStore();
+        debugInfo.storeStructure = {
+            users: Array.isArray(store.users) ? store.users.length : 'invalid',
+            games: Array.isArray(store.games) ? store.games.length : 'invalid',
+            config: !!store.config
+        };
+
+    } catch (error) {
+        debugInfo.error = error.message;
+    }
+
+    res.json(debugInfo);
+});
+
 // For Vercel deployment
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
