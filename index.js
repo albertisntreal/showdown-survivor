@@ -562,6 +562,27 @@ app.get('/rules', (req, res) => {
     res.render('rules');
 });
 
+app.get('/debug', (req, res) => {
+    const debugInfo = {
+        serverRunning: true,
+        timestamp: new Date().toISOString(),
+        scheduleType: typeof SCHEDULE,
+        scheduleExists: !!SCHEDULE,
+        functionsAvailable: {
+            getAllWeeks: typeof getAllWeeks,
+            getCurrentWeek: typeof getCurrentWeek,
+            getUpcomingGames: typeof getUpcomingGames
+        }
+    };
+
+    if (SCHEDULE) {
+        debugInfo.scheduleWeeks = Object.keys(SCHEDULE).length;
+        debugInfo.firstWeek = Object.keys(SCHEDULE)[0];
+    }
+
+    res.json(debugInfo);
+});
+
 app.post('/login', (req, res) => {
     const { email, password, displayName } = req.body;
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
