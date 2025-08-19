@@ -101,13 +101,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // Added for PWA API endpoints
 
-// Session configuration for production
+// Trust proxy for Render/Heroku-style deployments so secure cookies work behind TLS terminators
+app.set('trust proxy', 1);
+
+// Session configuration (prod-safe)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'showdown-secret-change-in-production',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Try setting this to false temporarily
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true
     }
@@ -529,17 +533,29 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/lobby', requireAuth, (req, res) => {
-    const store = readStore();
-    const games = store.games;
-    const upcomingGames = getUpcomingGames(3);
-    const currentWeek = getCurrentWeek();
+    try {
+        const store = readStore() || {};
+        const games = Array.isArray(store.games) ? store.games : [];
+        const upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
+        const currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
+        const weeks = (typeof getAllWeeks === 'function') ? getAllWeeks(SCHEDULE || {}) : [];
 
-    res.render('lobby', {
-        games,
-        upcomingGames,
-        currentWeek,
-        allWeeks: getAllWeeks(SCHEDULE)
-    });
+        res.render('lobby', {
+            games,
+            upcomingGames,
+            currentWeek,
+            allWeeks: weeks
+        });
+    } catch (err) {
+        console.error('Error rendering /lobby:', err);
+        // Render a minimal safe lobby to avoid crashing in production
+        res.status(200).render('lobby', {
+            games: [],
+            upcomingGames: [],
+            currentWeek: 1,
+            allWeeks: []
+        });
+    }
 });
 
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
