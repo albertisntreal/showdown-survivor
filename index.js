@@ -651,108 +651,57 @@ app.post('/logout', (req, res) => {
     });
 });
 
-// UPDATED LOBBY ROUTE WITH DEBUG LOGGING
 app.get('/lobby', requireAuth, (req, res) => {
-    console.log('\n🔍 === LOBBY PAGE REQUEST ===');
-    console.log('User:', req.session.user.displayName);
-    console.log('Timestamp:', new Date().toISOString());
+    console.log('🔍 LOBBY: Route accessed by', req.session.user.displayName);
 
     try {
-        console.log('📊 Reading store...');
+        console.log('🔍 LOBBY: Step 1 - Reading store');
         const store = readStore() || {};
         const games = Array.isArray(store.games) ? store.games : [];
-        console.log('✅ Store read successfully, games count:', games.length);
+        console.log('🔍 LOBBY: Store read OK, games:', games.length);
 
-        // Test each function individually with detailed logging
+        console.log('🔍 LOBBY: Step 2 - Testing getUpcomingGames');
         let upcomingGames = [];
-        let currentWeek = 1;
-        let weeks = [];
-
-        console.log('🧪 Testing helper functions...');
-
-        // Test getAllWeeks
-        console.log('1. Testing getAllWeeks...');
         try {
-            if (typeof getAllWeeks === 'function' && SCHEDULE) {
-                weeks = getAllWeeks(SCHEDULE);
-                console.log('   ✅ getAllWeeks successful:', weeks.length, 'weeks');
-            } else {
-                console.log('   ❌ getAllWeeks not available or SCHEDULE missing');
-                weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-            }
-        } catch (weeksError) {
-            console.log('   ❌ getAllWeeks failed:', weeksError.message);
-            weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
-        }
-
-        // Test getCurrentWeek
-        console.log('2. Testing getCurrentWeek...');
-        try {
-            if (typeof getCurrentWeek === 'function') {
-                currentWeek = getCurrentWeek();
-                console.log('   ✅ getCurrentWeek successful:', currentWeek);
-            } else {
-                console.log('   ❌ getCurrentWeek function not available');
-                currentWeek = 1;
-            }
-        } catch (currentWeekError) {
-            console.log('   ❌ getCurrentWeek failed:', currentWeekError.message);
-            currentWeek = 1;
-        }
-
-        // Test getUpcomingGames
-        console.log('3. Testing getUpcomingGames...');
-        try {
-            if (typeof getUpcomingGames === 'function') {
-                upcomingGames = getUpcomingGames(3);
-                console.log('   ✅ getUpcomingGames successful:', upcomingGames.length, 'games');
-            } else {
-                console.log('   ❌ getUpcomingGames function not available');
-                upcomingGames = [];
-            }
+            upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
+            console.log('🔍 LOBBY: getUpcomingGames OK, count:', upcomingGames.length);
         } catch (upcomingError) {
-            console.log('   ❌ getUpcomingGames failed:', upcomingError.message);
-            console.log('   Error details:', upcomingError.stack);
-            upcomingGames = [];
+            console.error('❌ LOBBY: getUpcomingGames failed:', upcomingError.message);
         }
 
-        console.log('📋 Final lobby data:');
-        console.log('   - Games:', games.length);
-        console.log('   - Upcoming games:', upcomingGames.length);
-        console.log('   - Current week:', currentWeek);
-        console.log('   - Total weeks:', weeks.length);
+        console.log('🔍 LOBBY: Step 3 - Testing getCurrentWeek');
+        let currentWeek = 1;
+        try {
+            currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
+            console.log('🔍 LOBBY: getCurrentWeek OK:', currentWeek);
+        } catch (weekError) {
+            console.error('❌ LOBBY: getCurrentWeek failed:', weekError.message);
+        }
 
-        console.log('🎨 Rendering lobby template...');
+        console.log('🔍 LOBBY: Step 4 - Testing getAllWeeks');
+        let weeks = [];
+        try {
+            weeks = getAllWeeks ? getAllWeeks(SCHEDULE) : [];
+            console.log('🔍 LOBBY: getAllWeeks OK, count:', weeks.length);
+        } catch (weeksError) {
+            console.error('❌ LOBBY: getAllWeeks failed:', weeksError.message);
+            weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+        }
+
+        console.log('🔍 LOBBY: Step 5 - Rendering template');
         res.render('lobby', {
             games,
             upcomingGames,
             currentWeek,
             allWeeks: weeks
         });
-        console.log('✅ Lobby rendered successfully');
+        console.log('✅ LOBBY: Rendered successfully');
 
     } catch (err) {
-        console.log('❌ CRITICAL ERROR in lobby route:');
-        console.log('Error message:', err.message);
-        console.log('Error stack:', err.stack);
-
-        // Try to render a safe fallback
-        try {
-            console.log('🚨 Attempting fallback render...');
-            res.status(500).render('lobby', {
-                games: [],
-                upcomingGames: [],
-                currentWeek: 1,
-                allWeeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-                error: 'Some features are temporarily unavailable.'
-            });
-            console.log('✅ Fallback render successful');
-        } catch (renderError) {
-            console.log('❌ FALLBACK RENDER FAILED:', renderError.message);
-            res.status(500).send('Internal Server Error - Please contact support');
-        }
+        console.error('❌ LOBBY: Critical error:', err.message);
+        console.error('❌ LOBBY: Stack trace:', err.stack);
+        res.status(500).send('Lobby temporarily unavailable');
     }
-    console.log('=== END LOBBY REQUEST ===\n');
 });
 
 app.get('/admin', requireAuth, requireAdmin, (req, res) => {
