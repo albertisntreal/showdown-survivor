@@ -1271,9 +1271,15 @@ app.get('/api/schedule/:week', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`🏈 Showdown server listening on port ${PORT}`);
-    console.log(`📊 Tracking ${getAllWeeks(SCHEDULE).length} weeks with ${ALL_TEAMS.length} teams`);
-    console.log(`📱 PWA features enabled with push notifications`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// For Vercel deployment
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🏈 Showdown server listening on port ${PORT}`);
+        console.log(`📊 Tracking ${getAllWeeks(SCHEDULE).length} weeks with ${ALL_TEAMS.length} teams`);
+        console.log(`📱 PWA features enabled with push notifications`);
+        console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+}
+
+// Export for Vercel
+module.exports = app;
