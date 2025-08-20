@@ -1,67 +1,653 @@
 <div class="page-header">
-  <h1>Lobby</h1>
-  <div class="page-meta">
-    <span class="page-chip">Create or join games</span>
-  </div>
+    <h1>🏈 Showdown Lobby</h1>
+    <div class="page-meta">
+        <span class="page-chip">Week <%= currentWeek || 1 %></span>
+        <span class="page-chip"><%= (games || []).length %> Active Pools</span>
+    </div>
 </div>
-<section class="grid">
-  <div class="card">
-    <h2>Create a Game</h2>
-    <form method="post" action="/games">
-      <label>Pool Name
-        <input name="name" placeholder="My Office Pool" />
-      </label>
-      <label>Entry Fee ($)
-        <input name="entryFee" type="number" min="0" step="1" value="20" />
-      </label>
-      <label>Max Players
-        <input name="maxPlayers" type="number" min="2" step="1" value="50" />
-      </label>
-      <label>Game Type
-        <select name="gameType">
-          <option value="regular">Regular</option>
-          <option value="buyback">Buy Back</option>
-        </select>
-      </label>
-      <label>Visibility
-        <select name="visibility">
-          <option value="public">Public</option>
-          <option value="private">Private</option>
-        </select>
-      </label>
-      <label>Join Key (private games)
-        <input name="joinKey" placeholder="Secret key" />
-      </label>
-      <button class="btn primary" type="submit">Create</button>
-    </form>
-  </div>
 
-  <div>
-    <h2>Public Games</h2>
-    <ul class="list">
-      <% if (games.length === 0) { %>
-        <li class="list-item">No games yet. Create one!</li>
-      <% } %>
-      <% games.forEach(g => { %>
-        <li class="list-item">
-          <div>
-            <strong><a href="/games/<%= g.id %>"><%= g.name %></a></strong><br/>
-            <small><%= (g.players || []).length %>/<%= g.maxPlayers || 0 %> players • Entry $<%= g.entryFee %> • <%= g.visibility %> • <%= (g.gameType || 'regular') === 'buyback' ? 'Buy Back' : 'Regular' %></small>
-          </div>
-          <div>
-            <% if (g.visibility === 'private') { %>
-              <form method="post" action="/games/<%= g.id %>/join" class="inline">
-                <input name="key" placeholder="Join key" />
-                <button class="btn" type="submit">Join</button>
-              </form>
-            <% } else { %>
-              <form method="post" action="/games/<%= g.id %>/join" class="inline">
-                <button class="btn" type="submit">Join</button>
-              </form>
-            <% } %>
-          </div>
-        </li>
-      <% }) %>
-    </ul>
-  </div>
-</section>
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <a href="/games" class="btn primary">🎯 Quick Pick</a>
+    <button onclick="document.getElementById('createGameModal').style.display='block'" class="btn outline">
+        ➕ Create Pool
+    </button>
+    <a href="/profile" class="btn ghost">👤 Profile</a>
+</div>
+
+<!-- Upcoming Games Preview -->
+<% if (upcomingGames && upcomingGames.length > 0) { %>
+    <div class="section">
+        <h2>🔥 Upcoming Games</h2>
+        <div class="upcoming-games">
+            <% upcomingGames.forEach(function(game) { %>
+                <%
+                    var homeTeam = getTeamInfo ? getTeamInfo(game.home) : { fullName: game.home, logo: '' };
+                    var awayTeam = getTeamInfo ? getTeamInfo(game.away) : { fullName: game.away, logo: '' };
+                    var gameTime = formatGameTime ? formatGameTime(game.kickoff) : { date: 'TBD', time: 'TBD' };
+                %>
+                <div class="upcoming-game">
+                    <div class="game-time">
+                        <div class="date"><%= gameTime.date %></div>
+                        <div class="time"><%= gameTime.time %></div>
+                    </div>
+                    <div class="matchup">
+                        <div class="team">
+                            <% if (awayTeam.logo) { %>
+                                <img src="<%= awayTeam.logo %>" alt="<%= awayTeam.fullName %>" class="team-logo">
+                            <% } %>
+                            <span><%= game.away %></span>
+                        </div>
+                        <div class="vs">@</div>
+                        <div class="team">
+                            <% if (homeTeam.logo) { %>
+                                <img src="<%= homeTeam.logo %>" alt="<%= homeTeam.fullName %>" class="team-logo">
+                            <% } %>
+                            <span><%= game.home %></span>
+                        </div>
+                    </div>
+                    <div class="week-label">Week <%= game.week || currentWeek || 1 %></div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+<% } %>
+
+<!-- Available Games -->
+<div class="section">
+    <h2>🏆 Available Pools</h2>
+    <% if (!games || games.length === 0) { %>
+        <div class="empty-state">
+            <div class="empty-icon">🎯</div>
+            <h3>No pools yet!</h3>
+            <p>Be the first to create a survivor pool.</p>
+            <button onclick="document.getElementById('createGameModal').style.display='block'" class="btn primary">
+                Create First Pool
+            </button>
+        </div>
+    <% } else { %>
+        <div class="games-grid">
+            <% games.forEach(function(game) { %>
+                <%
+                    var pot = (game.entryFee || 0) * (game.players || []).length;
+                    var playerCount = (game.players || []).length;
+                    var maxPlayers = game.maxPlayers || 50;
+                    var isPublic = game.visibility !== 'private';
+                    var gameType = game.gameType === 'buyback' ? 'Buyback' : 'Regular';
+                %>
+                <div class="game-card <%= isPublic ? 'public' : 'private' %>">
+                    <div class="game-header">
+                        <h3><%= game.name || 'Unnamed Pool' %></h3>
+                        <span class="game-type <%= game.gameType || 'regular' %>"><%= gameType %></span>
+                    </div>
+
+                    <div class="game-stats">
+                        <div class="stat">
+                            <span class="label">Prize Pool</span>
+                            <span class="value">$<%= pot %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Players</span>
+                            <span class="value"><%= playerCount %>/<%= maxPlayers %></span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Entry Fee</span>
+                            <span class="value">$<%= game.entryFee || 0 %></span>
+                        </div>
+                    </div>
+
+                    <div class="game-meta">
+                        <% if (!isPublic) { %>
+                            <span class="privacy-badge">🔒 Private</span>
+                        <% } %>
+                        <span class="created-date">
+              Created <%= game.createdAt ? new Date(game.createdAt).toLocaleDateString() : 'Recently' %>
+            </span>
+                    </div>
+
+                    <div class="game-actions">
+                        <% if ((game.players || []).includes(user && user.id)) { %>
+                            <a href="/games/<%= game.id %>" class="btn primary small">
+                                🎯 Make Pick
+                            </a>
+                            <a href="/games/<%= game.id %>/details" class="btn outline small">
+                                📊 Details
+                            </a>
+                        <% } else if (playerCount >= maxPlayers) { %>
+                            <button class="btn disabled small" disabled>
+                                🚫 Full
+                            </button>
+                        <% } else if (!isPublic) { %>
+                            <button onclick="joinPrivateGame('<%= game.id %>')" class="btn outline small">
+                                🔑 Join with Key
+                            </button>
+                        <% } else { %>
+                            <form method="POST" action="/games/<%= game.id %>/join" style="display: inline;">
+                                <button type="submit" class="btn primary small">
+                                    ➕ Join Pool
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<!-- Create Game Modal -->
+<div id="createGameModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Create New Pool</h2>
+            <button onclick="document.getElementById('createGameModal').style.display='none'" class="close-btn">✕</button>
+        </div>
+
+        <form method="POST" action="/games" class="create-game-form">
+            <div class="form-group">
+                <label for="gameName">Pool Name</label>
+                <input type="text" id="gameName" name="name" required
+                       placeholder="e.g., Friends & Family Survivor" maxlength="50">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="entryFee">Entry Fee ($)</label>
+                    <input type="number" id="entryFee" name="entryFee" min="0" max="1000"
+                           value="20" step="5">
+                </div>
+
+                <div class="form-group">
+                    <label for="maxPlayers">Max Players</label>
+                    <input type="number" id="maxPlayers" name="maxPlayers" min="2" max="100"
+                           value="10">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="gameType">Pool Type</label>
+                <select id="gameType" name="gameType">
+                    <option value="regular">Regular Survivor</option>
+                    <option value="buyback">Buyback Allowed (2 max)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="visibility">Privacy</label>
+                <select id="visibility" name="visibility" onchange="toggleJoinKey()">
+                    <option value="public">Public (anyone can join)</option>
+                    <option value="private">Private (requires join key)</option>
+                </select>
+            </div>
+
+            <div id="joinKeyGroup" class="form-group" style="display: none;">
+                <label for="joinKey">Join Key</label>
+                <input type="text" id="joinKey" name="joinKey"
+                       placeholder="Optional password to join">
+            </div>
+
+            <div class="form-actions">
+                <button type="button" onclick="document.getElementById('createGameModal').style.display='none'"
+                        class="btn outline">Cancel</button>
+                <button type="submit" class="btn primary">🎯 Create Pool</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Join Private Game Modal -->
+<div id="joinPrivateModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Join Private Pool</h2>
+            <button onclick="document.getElementById('joinPrivateModal').style.display='none'" class="close-btn">✕</button>
+        </div>
+
+        <form id="joinPrivateForm" method="POST">
+            <div class="form-group">
+                <label for="privateKey">Enter Join Key</label>
+                <input type="text" id="privateKey" name="key" required
+                       placeholder="Ask the pool creator for this">
+            </div>
+
+            <div class="form-actions">
+                <button type="button" onclick="document.getElementById('joinPrivateModal').style.display='none'"
+                        class="btn outline">Cancel</button>
+                <button type="submit" class="btn primary">🔑 Join Pool</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Toggle join key field visibility
+    function toggleJoinKey() {
+        const visibility = document.getElementById('visibility').value;
+        const joinKeyGroup = document.getElementById('joinKeyGroup');
+        joinKeyGroup.style.display = visibility === 'private' ? 'block' : 'none';
+    }
+
+    // Handle private game joining
+    function joinPrivateGame(gameId) {
+        document.getElementById('joinPrivateForm').action = `/games/${gameId}/join`;
+        document.getElementById('joinPrivateModal').style.display = 'block';
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const createModal = document.getElementById('createGameModal');
+        const joinModal = document.getElementById('joinPrivateModal');
+
+        if (event.target === createModal) {
+            createModal.style.display = 'none';
+        }
+        if (event.target === joinModal) {
+            joinModal.style.display = 'none';
+        }
+    }
+</script>
+
+<style>
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .page-meta {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .page-chip {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .quick-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+
+    .section {
+        margin-bottom: 40px;
+    }
+
+    .section h2 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .upcoming-games {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .upcoming-game {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .game-time {
+        text-align: center;
+        min-width: 80px;
+    }
+
+    .game-time .date {
+        font-weight: bold;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .game-time .time {
+        color: #666;
+        font-size: 12px;
+    }
+
+    .matchup {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+    }
+
+    .team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .team-logo {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+
+    .vs {
+        color: #999;
+        font-weight: bold;
+    }
+
+    .week-label {
+        background: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f9f9f9;
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .empty-state p {
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .game-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .game-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .game-card.private {
+        border-color: #ff9800;
+        background: #fff8e1;
+    }
+
+    .game-card.error {
+        border-color: #f44336;
+        background: #ffebee;
+    }
+
+    .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .game-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .game-type {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .game-type.regular {
+        background: #e8f5e8;
+        color: #2e7d32;
+    }
+
+    .game-type.buyback {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .game-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .stat {
+        text-align: center;
+    }
+
+    .stat .label {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .stat .value {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .game-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .privacy-badge {
+        background: #ff9800;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+    }
+
+    .game-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+    }
+
+    .btn.small {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .btn.primary {
+        background: #2196f3;
+        color: white;
+    }
+
+    .btn.primary:hover {
+        background: #1976d2;
+        transform: translateY(-1px);
+    }
+
+    .btn.outline {
+        background: transparent;
+        border: 2px solid #2196f3;
+        color: #2196f3;
+    }
+
+    .btn.outline:hover {
+        background: #2196f3;
+        color: white;
+    }
+
+    .btn.ghost {
+        background: transparent;
+        color: #666;
+    }
+
+    .btn.ghost:hover {
+        background: #f5f5f5;
+    }
+
+    .btn.disabled {
+        background: #e0e0e0;
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+        color: #333;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+    }
+
+    .create-game-form {
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .quick-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .games-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .upcoming-games {
+            grid-template-columns: 1fr;
+        }
+
+        .upcoming-game {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .game-actions {
+            flex-direction: column;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>

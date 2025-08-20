@@ -534,27 +534,96 @@ app.post('/logout', (req, res) => {
 
 app.get('/lobby', requireAuth, (req, res) => {
     try {
-        const store = readStore() || {};
-        const games = Array.isArray(store.games) ? store.games : [];
-        const upcomingGames = getUpcomingGames ? getUpcomingGames(3) : [];
-        const currentWeek = getCurrentWeek ? getCurrentWeek() : 1;
-        const weeks = (typeof getAllWeeks === 'function') ? getAllWeeks(SCHEDULE || {}) : [];
+        console.log('📊 Loading lobby for user:', req.session.user.displayName);
 
-        res.render('lobby', {
-            games,
-            upcomingGames,
-            currentWeek,
+        // Safely read store with fallbacks
+        let store;
+        try {
+            store = readStore();
+        } catch (e) {
+            console.error('❌ Error reading store:', e);
+            store = { users: [], games: [], config: {}, gameResults: {} };
+        }
+
+        // Ensure games is an array
+        const games = Array.isArray(store.games) ? store.games : [];
+        console.log('🎯 Found', games.length, 'games in store');
+
+        // Get upcoming games with error handling
+        let upcomingGames = [];
+        try {
+            if (typeof getUpcomingGames === 'function') {
+                upcomingGames = getUpcomingGames(3);
+                console.log('⏰ Found', upcomingGames.length, 'upcoming games');
+            }
+        } catch (e) {
+            console.error('❌ Error getting upcoming games:', e);
+            upcomingGames = [];
+        }
+
+        // Get current week with error handling
+        let currentWeek = 1;
+        try {
+            if (typeof getCurrentWeek === 'function') {
+                currentWeek = getCurrentWeek();
+                console.log('📅 Current week:', currentWeek);
+            }
+        } catch (e) {
+            console.error('❌ Error getting current week:', e);
+            currentWeek = CURRENT_WEEK_OVERRIDE || 1;
+        }
+
+        // Get all weeks with error handling
+        let weeks = [1];
+        try {
+            if (typeof getAllWeeks === 'function' && SCHEDULE) {
+                weeks = getAllWeeks(SCHEDULE);
+                console.log('📋 Available weeks:', weeks);
+            }
+        } catch (e) {
+            console.error('❌ Error getting all weeks:', e);
+            weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
+        }
+
+        // Render with safe data
+        const renderData = {
+            games: games,
+            upcomingGames: upcomingGames,
+            currentWeek: currentWeek,
             allWeeks: weeks
+        };
+
+        console.log('✅ Rendering lobby with data:', {
+            gameCount: renderData.games.length,
+            upcomingGameCount: renderData.upcomingGames.length,
+            currentWeek: renderData.currentWeek,
+            weekCount: renderData.allWeeks.length
         });
+
+        res.render('lobby', renderData);
+
     } catch (err) {
-        console.error('Error rendering /lobby:', err);
-        // Render a minimal safe lobby to avoid crashing in production
-        res.status(200).render('lobby', {
-            games: [],
-            upcomingGames: [],
-            currentWeek: 1,
-            allWeeks: []
-        });
+        console.error('💥 Critical error in lobby route:', err);
+        console.error('Stack trace:', err.stack);
+
+        // Render minimal safe lobby to avoid total failure
+        try {
+            res.status(200).render('lobby', {
+                games: [],
+                upcomingGames: [],
+                currentWeek: 1,
+                allWeeks: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                error: 'Some features may be temporarily unavailable. Please refresh the page.'
+            });
+        } catch (renderError) {
+            console.error('💥💥 Failed to render even safe lobby:', renderError);
+            res.status(500).send(`
+                <h1>Server Error</h1>
+                <p>There was an error loading the lobby. Please try refreshing the page.</p>
+                <p><a href="/profile">Go to Profile</a> | <a href="/logout">Logout</a></p>
+                <p>Error: ${err.message}</p>
+            `);
+        }
     }
 });
 
