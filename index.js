@@ -3,10 +3,36 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
-const { kv } = require('@vercel/kv');
+const { Pool } = require('pg');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// PostgreSQL connection
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
+
+// Initialize database table
+async function initDatabase() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS showdown_data (
+                id SERIAL PRIMARY KEY,
+                key VARCHAR(255) UNIQUE NOT NULL,
+                data JSONB NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+        console.log('✅ Database table initialized');
+    } catch (error) {
+        console.error('❌ Database initialization error:', error);
+    }
+}
+
+// Initialize on startup
+initDatabase();
 
 // Basic Express setup
 app.set('view engine', 'ejs');
@@ -45,28 +71,36 @@ function requireAdmin(req, res, next) {
     next();
 }
 
-// KV Storage functions
+// PostgreSQL Storage functions
 async function readStore() {
     try {
-        const store = await kv.get('showdown:store');
-        if (store) {
-            return store;
+        const result = await pool.query('SELECT data FROM showdown_data WHERE key = $1', ['store']);
+        if (result.rows.length > 0) {
+            console.log('✅ Store loaded from PostgreSQL');
+            return result.rows[0].data;
         } else {
             const initialStore = { users: [], games: [], config: {} };
             await writeStore(initialStore);
+            console.log('✅ Initialized new store in PostgreSQL');
             return initialStore;
         }
     } catch (e) {
-        console.error('KV Error:', e);
+        console.error('❌ PostgreSQL read error:', e);
         return { users: [], games: [], config: {} };
     }
 }
 
 async function writeStore(store) {
     try {
-        await kv.set('showdown:store', store);
+        await pool.query(`
+            INSERT INTO showdown_data (key, data, updated_at) 
+            VALUES ($1, $2, CURRENT_TIMESTAMP)
+            ON CONFLICT (key) 
+            DO UPDATE SET data = $2, updated_at = CURRENT_TIMESTAMP
+        `, ['store', JSON.stringify(store)]);
+        console.log('✅ Store saved to PostgreSQL');
     } catch (e) {
-        console.error('KV Write Error:', e);
+        console.error('❌ PostgreSQL write error:', e);
     }
 }
 
@@ -206,6 +240,8 @@ app.get('/admin', requireAuth, requireAdmin, async (req, res) => {
                 <li>Total Users: ${store.users.length}</li>
                 <li>Total Games: ${store.games.length}</li>
             </ul>
+            <h3>Database Test</h3>
+            <p><a href="/debug">Check Database Connection</a></p>
         `);
     } catch (error) {
         res.status(500).send('Admin error');
@@ -303,23 +339,27 @@ app.get('/logout', (req, res) => {
 
 app.get('/debug', async (req, res) => {
     try {
+        // Test database connection
+        const dbTest = await pool.query('SELECT NOW()');
         const store = await readStore();
+
         res.json({
-            kvWorking: true,
+            databaseWorking: true,
+            currentTime: dbTest.rows[0].now,
             users: store.users.length,
             games: store.games.length,
+            databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Missing',
             timestamp: new Date().toISOString()
         });
     } catch (error) {
-        res.json({ error: error.message });
+        res.json({
+            error: error.message,
+            databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Missing'
+        });
     }
 });
 
-// For Vercel
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
-
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`🏈 Showdown server listening on port ${PORT}`);
+    console.log(`🗄️ Using PostgreSQL database`);
+});
