@@ -1021,29 +1021,81 @@ app.get('/games/:id/details', requireAuth, (req, res) => {
 });
 
 app.get('/game', requireAuth, (req, res) => {
-    const store = readStore();
-    let gid = req.session.currentGameId;
-    if (!gid) {
-        const user = (store.users || []).find(u => u.id === req.session.user.id);
-        const first = (user && Array.isArray(user.joinedGames) && user.joinedGames.length > 0) ? user.joinedGames[0] : null;
-        gid = first;
+    try {
+        const store = readStore();
+        let gid = req.session.currentGameId;
+
+        if (!gid) {
+            const user = (store.users || []).find(u => u.id === req.session.user.id);
+            const first = (user && Array.isArray(user.joinedGames) && user.joinedGames.length > 0) ? user.joinedGames[0] : null;
+            gid = first;
+        }
+
+        const exists = gid && (store.games || []).some(g => g.id === gid);
+
+        if (!exists) {
+            // Instead of redirecting to lobby, show a helpful page
+            return res.send(`
+                <h1>No Game Found</h1>
+                <p>You don't seem to be part of any games yet.</p>
+                <p><a href="/profile">Go to Profile</a> | <a href="/">Home</a></p>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = '/profile';
+                    }, 3000);
+                </script>
+            `);
+        }
+
+        return res.redirect(`/games/${gid}/details`);
+
+    } catch (error) {
+        console.error('Error in /game route:', error);
+        return res.send(`
+            <h1>Error</h1>
+            <p>There was an error finding your game.</p>
+            <p><a href="/profile">Go to Profile</a> | <a href="/">Home</a></p>
+        `);
     }
-    const exists = gid && (store.games || []).some(g => g.id === gid);
-    if (!exists) return res.redirect('/lobby');
-    return res.redirect(`/games/${gid}/details`);
 });
 
 app.get('/picks', requireAuth, (req, res) => {
-    const store = readStore();
-    let gid = req.session.currentGameId;
-    if (!gid) {
-        const user = (store.users || []).find(u => u.id === req.session.user.id);
-        const first = (user && Array.isArray(user.joinedGames) && user.joinedGames.length > 0) ? user.joinedGames[0] : null;
-        gid = first;
+    try {
+        const store = readStore();
+        let gid = req.session.currentGameId;
+
+        if (!gid) {
+            const user = (store.users || []).find(u => u.id === req.session.user.id);
+            const first = (user && Array.isArray(user.joinedGames) && user.joinedGames.length > 0) ? user.joinedGames[0] : null;
+            gid = first;
+        }
+
+        const exists = gid && (store.games || []).some(g => g.id === gid);
+
+        if (!exists) {
+            // Instead of redirecting to lobby, show a helpful page
+            return res.send(`
+                <h1>No Game Found</h1>
+                <p>You don't seem to be part of any games yet.</p>
+                <p><a href="/profile">Go to Profile</a> | <a href="/">Home</a></p>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = '/profile';
+                    }, 3000);
+                </script>
+            `);
+        }
+
+        return res.redirect(`/games/${gid}`);
+
+    } catch (error) {
+        console.error('Error in /picks route:', error);
+        return res.send(`
+            <h1>Error</h1>
+            <p>There was an error finding your game.</p>
+            <p><a href="/profile">Go to Profile</a> | <a href="/">Home</a></p>
+        `);
     }
-    const exists = gid && (store.games || []).some(g => g.id === gid);
-    if (!exists) return res.redirect('/lobby');
-    return res.redirect(`/games/${gid}`);
 });
 
 app.post('/games/:id/pick', requireAuth, (req, res) => {
