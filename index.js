@@ -186,46 +186,13 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.get('/lobby', requireAuth, async (req, res) => {
-    try {
-        const store = await readStore();
-        const games = store.games || [];
-
-        let gamesList = '<h3>Available Games</h3>';
-        if (games.length === 0) {
-            gamesList += '<p>No games yet. Create one!</p>';
-        } else {
-            gamesList += '<ul>';
-            games.forEach(game => {
-                gamesList += `<li><a href="/games/${game.id}">${game.name}</a> - ${game.players.length} players</li>`;
-            });
-            gamesList += '</ul>';
-        }
-
-        res.send(`
-            <h1>Lobby</h1>
-            <p>Welcome, ${req.session.user.displayName}!</p>
-            <p><a href="/logout">Logout</a> | <a href="/profile">Profile</a></p>
-            
-            <h3>Create New Game</h3>
-            <form method="post" action="/games">
-                <div>
-                    <label>Game Name:</label>
-                    <input name="name" value="My Pool" required>
-                </div>
-                <div>
-                    <label>Entry Fee ($):</label>
-                    <input name="entryFee" type="number" value="20">
-                </div>
-                <button type="submit">Create Game</button>
-            </form>
-            
-            ${gamesList}
-        `);
-    } catch (error) {
-        console.error('Lobby error:', error);
-        res.status(500).send('Lobby error');
-    }
+app.get('/lobby', requireAuth, (req, res) => {
+    res.send(`
+        <h1>Lobby - Simple Test</h1>
+        <p>If you see this, the route works!</p>
+        <p>User: ${req.session.user.displayName}</p>
+        <p><a href="/debug">Debug</a></p>
+    `);
 });
 
 app.get('/admin', requireAuth, requireAdmin, async (req, res) => {
